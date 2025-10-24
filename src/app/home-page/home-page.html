@@ -32,7 +32,7 @@
                   @if (item.latest_value > 0) {
                     <span class="percentage-container">
                       <mat-icon class="isWorseThanAverage">keyboard_arrow_up</mat-icon>
-                      <p class="isWorseThanAverage">{{ makeMetricPretty(item.latest_value)}} of packets were lost)</p>
+                      <p class="isWorseThanAverage">{{ makeMetricPretty(item.latest_value)}} of packets were lost</p>
                     </span>
                   } @else {
                     <p class="isBetterThanAverage">No packets were lost</p>

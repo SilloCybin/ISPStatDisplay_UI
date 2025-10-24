@@ -1,0 +1,61 @@
+.container {
+  width: 100%;
+  height: calc(100% - 49px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  justify-items: center;
+  align-content: center;
+  align-items: center;
+}
+
+.children{
+  width: 100%;
+  text-align: center;
+}
+
+a:hover {
+  cursor: pointer;
+  color: blue;
+  text-decoration: underline;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.carousel {
+  margin: 20px auto;
+  max-width: 1200px;
+}
+
+.slide {
+  padding: 0 10px;
+}
+
+.carousel-card {
+  height: 200px;
+  display: flex;
+  margin: 10px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.slick-dots li button:before {
+  color: #1976d2; /* Angular Material blue */
+}
+
+.isBetterThanAverage{
+  color: green;
+}
+
+.isWorseThanAverage{
+  color: red;
+}
+
+.percentage-container{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}

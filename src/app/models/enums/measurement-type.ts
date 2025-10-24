@@ -1,0 +1,5 @@
+export enum MeasurementType {
+  BANDWIDTH_MEASUREMENT,
+  PING_MEASUREMENT,
+  PACKET_LOSS_PERCENTAGE
+}

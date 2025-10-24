@@ -1,0 +1,28 @@
+.metric:hover{
+  cursor: pointer;
+  color: cornflowerblue;
+}
+
+.isSelected{
+  color: green;
+  font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.title-section-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px;
+}
+
+.mat-button-elevated{
+  cursor: pointer;
+}
+
+li{
+  list-style-type: none;
+}

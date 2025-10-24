@@ -1,0 +1,24 @@
+.data-explorer-layout {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+  height: 100vh;
+}
+
+.sidebar {
+  height: 100%;
+  grid-column: span 1;   /* take 1 column */
+  background-color: #ccc;
+}
+
+.content {
+  height: 100%;
+  grid-column: span 3;   /* take 3 columns */
+  background-color: #eee;
+}
+
+.icon-right {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 0.25rem; /* optional spacing */
+}

@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {MatTabLink, MatTabNav, MatTabNavPanel} from '@angular/material/tabs';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [MatTabLink, MatTabNav, MatTabNavPanel, RouterLinkActive, RouterOutlet, RouterLink],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

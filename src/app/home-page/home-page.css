@@ -45,11 +45,11 @@ a:hover {
   color: #1976d2; /* Angular Material blue */
 }
 
-.isBetterThanAverage{
+.goodStat{
   color: green;
 }
 
-.isWorseThanAverage{
+.badStat{
   color: red;
 }
 

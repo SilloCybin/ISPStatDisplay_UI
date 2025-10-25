@@ -29,7 +29,7 @@ export class MetricChart implements OnInit, OnDestroy {
   secondMetricSeries: MetricPoint[] = [];
   displayOnTwoYAxis: boolean = false;
 
-  colors: string[] = ['#0278ff', '#fa3d1c'];
+  colors: string[] = ['#2a8eff', '#68ce00'];
 
   @ViewChild("chart") chart: ChartComponent | undefined;
 

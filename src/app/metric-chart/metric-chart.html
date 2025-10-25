@@ -1,4 +1,10 @@
 @if (chartOptions.series.length) {
+  @if (selectedMetrics.length > 1){
+    <section class="checkbox-container">
+        <mat-checkbox (change)="onTwoYAxisDisplayCheckboxToggle($event.checked)" [checked]="displayOnTwoYAxis"
+                      labelPosition="before" class="example-margin"><strong>Display on two Y axis</strong></mat-checkbox>
+    </section>
+  }
   <div class="chart-container">
     <apx-chart #chart
                [series]="chartOptions.series"

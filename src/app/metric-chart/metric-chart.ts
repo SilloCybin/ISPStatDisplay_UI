@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {SpeedtestService} from '../services/speedtest-service';
 import {MetricPoint} from '../models/classes/metric-point';
 import {combineLatest} from 'rxjs';
-import {ApexAxisChartSeries, ApexChart, ApexTitleSubtitle, ApexXAxis, ApexYAxis, ChartComponent,} from 'ng-apexcharts';
+import {ApexAxisChartSeries, ApexChart, ApexTitleSubtitle, ApexXAxis, ApexYAxis, ChartComponent} from 'ng-apexcharts';
 import {MatCheckbox} from '@angular/material/checkbox';
 
 export type ChartOptions = {
@@ -48,8 +48,7 @@ export class MetricChart implements OnInit, OnDestroy {
     }
   };
 
-  constructor(private speedtestService: SpeedtestService) {
-  }
+  constructor(private speedtestService: SpeedtestService) {}
 
   ngOnInit() {
     this.speedtestService.selectedMetric$.subscribe(metrics => {
@@ -136,7 +135,6 @@ export class MetricChart implements OnInit, OnDestroy {
     this.selectedMetrics = [];
     this.speedtestService.clearSelection();
   }
-
 
   onTwoYAxisDisplayCheckboxToggle(checked: boolean) {
     this.displayOnTwoYAxis = checked;

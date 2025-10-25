@@ -17,21 +17,32 @@ export class DataExplorerSidebar {
   selectedMetrics: string[] = [];
 
 
-  constructor(private speedTestService : SpeedtestService) {}
+  constructor(private speedTestService: SpeedtestService) {
+  }
 
   onMetricSelection(selectedMetric: string) {
-    if (this.selectedMetrics.includes(selectedMetric)){
+    if (this.selectedMetrics.includes(selectedMetric)) {
       this.selectedMetrics = this.selectedMetrics.filter(item => item !== selectedMetric);
       this.speedTestService.setSelectedMetrics(this.selectedMetrics);
-    } else if (this.selectedMetrics.length < 2){
+    } else if (this.selectedMetrics.length < 2) {
       this.selectedMetrics.push(selectedMetric);
       this.speedTestService.setSelectedMetrics(this.selectedMetrics);
-    } else {
-      console.log('Cannot select more than 2 metrics to display on the chart')
+    } else if (this.selectedMetrics.length === 2) {
+      if ((this.selectedMetrics[0].includes('Latency') && this.selectedMetrics[1].includes('Latency') && selectedMetric.includes('Latency'))
+        || (this.selectedMetrics[0].includes('High') && this.selectedMetrics[1].includes('High') && selectedMetric.includes('High'))
+        || (this.selectedMetrics[0].includes('Low') && this.selectedMetrics[1].includes('Low') && selectedMetric.includes('Low'))
+        || (this.selectedMetrics[0].includes('Jitter') && this.selectedMetrics[1].includes('Jitter') && selectedMetric.includes('Jitter')))
+      {
+        this.selectedMetrics.push(selectedMetric);
+        this.speedTestService.setSelectedMetrics(this.selectedMetrics);
+      }
+    } else if (this.selectedMetrics.length === 3){
+      console.log(`Can't select more than 3 metrics to display`);
+      return;
     }
   }
 
-  isSelected(metric: string): boolean{
+  isSelected(metric: string): boolean {
     return this.selectedMetrics.includes(metric);
   }
 

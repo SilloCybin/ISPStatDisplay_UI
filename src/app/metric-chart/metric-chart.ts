@@ -54,10 +54,10 @@ export class MetricChart implements OnInit, OnDestroy {
   ngOnInit() {
     this.speedtestService.selectedMetric$.subscribe(metrics => {
       this.selectedMetrics = metrics;
-      this.updateChart(this.selectedMetrics);
       if (this.selectedMetrics.length < 2){
         this.displayOnTwoYAxis = false;
       }
+      this.updateChart(this.selectedMetrics);
     })
   }
 

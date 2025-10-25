@@ -55,6 +55,9 @@ export class MetricChart implements OnInit, OnDestroy {
     this.speedtestService.selectedMetric$.subscribe(metrics => {
       this.selectedMetrics = metrics;
       this.updateChart(this.selectedMetrics);
+      if (this.selectedMetrics.length < 2){
+        this.displayOnTwoYAxis = false;
+      }
     })
   }
 
@@ -65,7 +68,9 @@ export class MetricChart implements OnInit, OnDestroy {
       this.chartOptions.xaxis = {categories: []};
       this.chartOptions.yaxis = [];
       this.chartOptions.title = {text: ''};
-      if (this.chart) this.chart.updateOptions(this.chartOptions, true, true);
+      if (this.chart) {
+        this.chart.updateOptions(this.chartOptions, true, true);
+      }
       return;
     }
 

@@ -7,12 +7,14 @@
     <li><strong>Bandwidth measurements</strong></li>
     <ul>
       <li class="metric" (click)="onMetricSelection('downloadBandwidth')"
-          [class.isSelected]="isSelected('downloadBandwidth')">Download Bandwidth
+          [class.isSelected]="isSelected('downloadBandwidth')"
+          [class.disabled]="isMetricDisabled('downloadBandwidth')">Download Bandwidth
         @if (isSelected('downloadBandwidth')) {
           <mat-icon>check-icon</mat-icon>
         }</li>
       <li class="metric" (click)="onMetricSelection('uploadBandwidth')"
-          [class.isSelected]="isSelected('uploadBandwidth')">Upload Bandwidth
+          [class.isSelected]="isSelected('uploadBandwidth')"
+          [class.disabled]="isMetricDisabled('uploadBandwidth')">Upload Bandwidth
         @if (isSelected('uploadBandwidth')) {
           <mat-icon>check-icon</mat-icon>
         }</li>
@@ -23,19 +25,22 @@
       <li><strong>Latency</strong></li>
       <ul>
         <li class="metric" (click)="onMetricSelection('downloadPingLatency')"
-            [class.isSelected]="isSelected('downloadPingLatency')">Download Ping Latency
+            [class.isSelected]="isSelected('downloadPingLatency')"
+            [class.disabled]="isMetricDisabled('downloadPingLatency')">Download Ping Latency
           @if (isSelected('downloadPingLatency')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('uploadPingLatency')"
-            [class.isSelected]="isSelected('uploadPingLatency')">Upload Ping Latency
+            [class.isSelected]="isSelected('uploadPingLatency')"
+            [class.disabled]="isMetricDisabled('uploadPingLatency')">Upload Ping Latency
           @if (isSelected('uploadPingLatency')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('idlePingLatency')"
-            [class.isSelected]="isSelected('idlePingLatency')">Idle Ping Latency
+            [class.isSelected]="isSelected('idlePingLatency')"
+            [class.disabled]="isMetricDisabled('idlePingLatency')">Idle Ping Latency
           @if (isSelected('idlePingLatency')) {
             <mat-icon>check-icon</mat-icon>
           }
@@ -44,19 +49,22 @@
       <li><strong>Low</strong></li>
       <ul>
         <li class="metric" (click)="onMetricSelection('downloadPingLow')"
-            [class.isSelected]="isSelected('downloadPingLow')">Download Ping Low
+            [class.isSelected]="isSelected('downloadPingLow')"
+            [class.disabled]="isMetricDisabled('downloadPingLow')">Download Ping Low
           @if (isSelected('downloadPingLow')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('uploadPingLow')"
-            [class.isSelected]="isSelected('uploadPingLow')">Upload Ping Low
+            [class.isSelected]="isSelected('uploadPingLow')"
+            [class.disabled]="isMetricDisabled('uploadPingLow')">Upload Ping Low
           @if (isSelected('uploadPingLow')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('idlePingLow')"
-            [class.isSelected]="isSelected('idlePingLow')">Idle Ping Low
+            [class.isSelected]="isSelected('idlePingLow')"
+            [class.disabled]="isMetricDisabled('idlePingLow')">Idle Ping Low
           @if (isSelected('idlePingLow')) {
             <mat-icon>check-icon</mat-icon>
           }
@@ -65,19 +73,22 @@
       <li><strong>High</strong></li>
       <ul>
         <li class="metric" (click)="onMetricSelection('downloadPingHigh')"
-            [class.isSelected]="isSelected('downloadPingHigh')">Download Ping High
+            [class.isSelected]="isSelected('downloadPingHigh')"
+            [class.disabled]="isMetricDisabled('downloadPingHigh')">Download Ping High
           @if (isSelected('downloadPingHigh')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('uploadPingHigh')"
-            [class.isSelected]="isSelected('uploadPingHigh')">Upload Ping High
+            [class.isSelected]="isSelected('uploadPingHigh')"
+            [class.disabled]="isMetricDisabled('uploadPingHigh')">Upload Ping High
           @if (isSelected('uploadPingHigh')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('idlePingHigh')"
-            [class.isSelected]="isSelected('idlePingHigh')">Idle Ping High
+            [class.isSelected]="isSelected('idlePingHigh')"
+            [class.disabled]="isMetricDisabled('idlePingHigh')">Idle Ping High
           @if (isSelected('idlePingHigh')) {
             <mat-icon>check-icon</mat-icon>
           }
@@ -86,19 +97,22 @@
       <li><strong>Jitter</strong></li>
       <ul>
         <li class="metric" (click)="onMetricSelection('downloadPingJitter')"
-            [class.isSelected]="isSelected('downloadPingJitter')">Download Ping Jitter
+            [class.isSelected]="isSelected('downloadPingJitter')"
+            [class.disabled]="isMetricDisabled('downloadPingJitter')">Download Ping Jitter
           @if (isSelected('downloadPingJitter')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('uploadPingJitter')"
-            [class.isSelected]="isSelected('uploadPingJitter')">Upload Ping Jitter
+            [class.isSelected]="isSelected('uploadPingJitter')"
+            [class.disabled]="isMetricDisabled('uploadPingJitter')">Upload Ping Jitter
           @if (isSelected('uploadPingJitter')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('idlePingJitter')"
-            [class.isSelected]="isSelected('idlePingJitter')">Idle Ping Jitter
+            [class.isSelected]="isSelected('idlePingJitter')"
+            [class.disabled]="isMetricDisabled('idlePingJitter')">Idle Ping Jitter
           @if (isSelected('idlePingJitter')) {
             <mat-icon>check-icon</mat-icon>
           }
@@ -107,7 +121,8 @@
     </ul>
     <br>
     <li class="metric" (click)="onMetricSelection('packetLoss')"
-        [class.isSelected]="isSelected('packetLoss')"><strong>Packet Loss</strong>
+        [class.isSelected]="isSelected('packetLoss')"
+        [class.disabled]="isMetricDisabled('packetLoss')"><strong>Packet Loss</strong>
       @if (isSelected('packetLoss')) {
         <mat-icon>check-icon</mat-icon>
       }

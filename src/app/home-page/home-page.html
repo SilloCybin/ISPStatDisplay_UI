@@ -30,7 +30,7 @@
                 } @else if (item.measurementType === MeasurementType.PACKET_LOSS_PERCENTAGE) {
                   <h1>{{ makeMetricPretty(item.latest_value) }} %</h1>
                   @if (item.latest_value > 0) {
-                      <p class="badStat">{{ makeMetricPretty(item.latest_value)}} of packets were lost</p>
+                      <p class="badStat">of packets were lost</p>
                   } @else {
                     <p class="goodStat">No packets were lost</p>
                   }

@@ -30,14 +30,11 @@ export function isMetricDisabled(metric: string, selectedMetrics: string[], isSe
     } else if (
       (
         (selectedMetrics[0].includes('Bandwidth')
-          && selectedMetrics[1].includes('Bandwidth'))
-        || (selectedMetrics[0].includes('Bandwidth')
-          && selectedMetrics[1].includes('packetLoss'))
-        || (selectedMetrics[0].includes('packetLoss')
-          && selectedMetrics[1].includes('Bandwidth')
-        )
-      )
-      && !isSelected) {
+          || selectedMetrics[0].includes('packetLoss')
+          || selectedMetrics[1].includes('Bandwidth')
+          || selectedMetrics[1].includes('packetLoss'))
+        && !isSelected)
+    ) {
       return true;
     } else {
       return false

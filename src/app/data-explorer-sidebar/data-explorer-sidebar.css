@@ -1,6 +1,7 @@
 .metric:hover{
   cursor: pointer;
-  color: cornflowerblue;
+  font-weight: bolder;
+  color: blue;
 }
 
 .isSelected{

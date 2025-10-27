@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "clean-deploy": "rm -rf /var/www/ispstatdisplay/browser/* && ng build --configuration=pi"
   },
   "prettier": {
     "printWidth": 100,

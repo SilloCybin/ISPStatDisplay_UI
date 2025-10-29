@@ -5,6 +5,7 @@ import {ApexAxisChartSeries, ApexChart, ApexTitleSubtitle, ApexXAxis, ApexYAxis,
 import {MatCheckbox} from '@angular/material/checkbox';
 import {TimeWindowSettings} from '../models/classes/time-window';
 import {combineLatest} from 'rxjs';
+import {MatIcon} from '@angular/material/icon';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -18,7 +19,8 @@ export type ChartOptions = {
   selector: 'app-metric-chart',
   imports: [
     ChartComponent,
-    MatCheckbox
+    MatCheckbox,
+    MatIcon
   ],
   templateUrl: './metric-chart.html',
   styleUrl: './metric-chart.css'
@@ -36,7 +38,7 @@ export class MetricChart implements OnInit, OnDestroy {
     series: [],
     chart: {
       type: 'line',
-      height: 800
+      height: 800,
     },
     xaxis: {
       categories: []
@@ -47,6 +49,8 @@ export class MetricChart implements OnInit, OnDestroy {
     }
   };
 
+  colors: string[] = ['#1d69f6','#5fb602'];
+
   constructor(private speedtestService: SpeedtestService) {}
 
   ngOnInit() {
@@ -56,32 +60,19 @@ export class MetricChart implements OnInit, OnDestroy {
       if (this.selectedMetrics.length !== 2){
         this.displayOnTwoYAxis = false;
       }
-      if (
-        (this.timeWindowSettings.timeUnitNumber && this.timeWindowSettings.timeUnit)
-        || this.timeWindowSettings.dateRange
-        || this.timeWindowSettings.startDate
-        || this.timeWindowSettings.isEntireHistory
-      ) {
-        console.log('Coming from MetricChartComponent, on selectedMetrics update - Displaying because time settings are defined and metrics selected :', this.timeWindowSettings, this.selectedMetrics);
-        this.updateChart(this.selectedMetrics);
-      } else {
-        console.log('Coming from MetricChartComponent, on selectedMetrics update - Not displaying because time settings are undefined');
-      }
+      this.updateChart(this.selectedMetrics);
     })
 
     this.speedtestService.timeWindowSettings$.subscribe(settings => {
       this.timeWindowSettings = settings;
       if (this.selectedMetrics.length) {
-        console.log('Coming from MetricChartComponent, on timeWindowSettings update - Displaying because time settings are defined and metrics selected :', this.timeWindowSettings, this.selectedMetrics);
         this.updateChart(this.selectedMetrics)
-      } else {
-        console.log('Coming from MetricChartComponent, on timeWindowSettings update - Not displaying because metric selection is empty');
       }
     })
   }
 
   updateChart(metrics: string[]) {
-    if (!metrics.length) {
+    if (!metrics.length || this.timeWindowSettings.isTimeWindowEmpty()) {
       // Clear chart
       this.chartOptions.series = [];
       this.chartOptions.xaxis = {categories: []};
@@ -96,14 +87,15 @@ export class MetricChart implements OnInit, OnDestroy {
     const observables = metrics.map(m => this.speedtestService.getMetricPoints(m, this.timeWindowSettings));
     combineLatest(observables).subscribe(results => {
 
-      console.log(results);
-
       let yaxis: any[] = [];
 
       if (this.displayOnTwoYAxis) {
         yaxis = metrics.map((metric, i) => ({
           title: {
             text: this.formatMetricName(metric),
+            style: {
+              color: this.colors[i]
+            }
           },
           opposite: (i === 1)
         }));
@@ -113,7 +105,8 @@ export class MetricChart implements OnInit, OnDestroy {
             name: this.formatMetricName(metrics[i]),
             type: 'line',
             data: data.map(p => [new Date(p.timestamp).getTime(), p.value]),
-            yaxis: i
+            yaxis: i,
+            color: this.colors[i]
           }));
       }
 

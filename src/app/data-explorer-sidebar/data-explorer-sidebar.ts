@@ -78,9 +78,15 @@ export class DataExplorerSidebar {
     return isMetricDisabled(metric, this.selectedMetrics, this.isMetricSelected(metric));
   }
 
-  clearMetricsSelection() {
+  clearSidebarSelection() {
     this.selectedMetrics = [];
     this.speedTestService.setSelectedMetrics(this.selectedMetrics);
+    this.selectedTimeWindow = null;
+    this.selectedNumberOfTimeUnits = null;
+    this.selectedTimeUnit = null;
+    this.selectedStartDateToNowStartDate = null;
+    this.selectedDateRange = null;
+    this.speedTestService.setSelectedTimeWindow(new TimeWindowSettings());
   }
 
   onTimeWindowSelection(event: MatRadioChange){

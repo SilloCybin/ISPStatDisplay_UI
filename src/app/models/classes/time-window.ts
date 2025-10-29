@@ -60,4 +60,7 @@ export class TimeWindowSettings {
     this._dateRange = value;
   }
 
+  isTimeWindowEmpty() {
+    return (!this.timeUnitNumber && !this.timeUnit && !this.startDate && !this.dateRange && !this.isEntireHistory)
+  }
 }

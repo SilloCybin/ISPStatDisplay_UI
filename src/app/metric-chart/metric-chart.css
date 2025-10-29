@@ -24,3 +24,9 @@ mat-checkbox {
   font-style: italic;
   font-weight: bold;
 }
+
+.pick-a-metric-message-container{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}

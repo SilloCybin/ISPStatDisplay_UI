@@ -37,8 +37,8 @@ export class SpeedtestService {
 
   getMetricPoints(metric: string, timeWindowSettings: TimeWindowSettings): Observable<MetricPoint[]> {
     if (timeWindowSettings.timeUnitNumber && timeWindowSettings.timeUnit){
+
       const startDate = determineStartDateFromNow(timeWindowSettings.timeUnitNumber, timeWindowSettings.timeUnit);
-      console.log('Coming from service, startDate :', startDate.toISOString());
 
       return this.httpClient.get<MetricPoint[]>(
         `${this.apiBaseUrl}/fromStartDate/${metric}`, {
@@ -51,7 +51,6 @@ export class SpeedtestService {
       );
 
     } else if (timeWindowSettings.startDate) {
-      console.log('Coming from service, startDate :', timeWindowSettings.startDate.toISOString());
 
       return this.httpClient.get<MetricPoint[]>(
         `${this.apiBaseUrl}/fromStartDate/${metric}`, {
@@ -64,9 +63,9 @@ export class SpeedtestService {
       );
 
     } else if (timeWindowSettings.dateRange) {
+
       const startDate = timeWindowSettings.dateRange.get("start");
       const endDate = timeWindowSettings.dateRange.get("end");
-      console.log('Coming from service, dateRange :', startDate?.value.toISOString(), endDate?.value.toISOString());
 
       return this.httpClient.get<MetricPoint[]>(
         `${this.apiBaseUrl}/dateRange/${metric}`, {
@@ -81,8 +80,6 @@ export class SpeedtestService {
 
     } else {
       // Entire history was selected
-      console.log('Chose entire history', metric);
-
       return this.httpClient.get<MetricPoint[]>(`${this.apiBaseUrl}/getAll/${metric}`)
         .pipe(
           catchError(this.handleError)
@@ -93,6 +90,7 @@ export class SpeedtestService {
 
   clearSelection() {
     this.selectedMetricsSubject.next([]);
+    this.timeWindowSettingsSubject.next(new TimeWindowSettings());
   }
 
   getMetricsAverages(): Observable<AveragesInterface> {
@@ -104,7 +102,6 @@ export class SpeedtestService {
 
   setSelectedTimeWindow(timeWindowSettings: TimeWindowSettings | undefined){
     if (timeWindowSettings instanceof TimeWindowSettings) {
-      console.log('Coming from service - was told to pass this :', timeWindowSettings)
       this.timeWindowSettingsSubject.next(timeWindowSettings);
     }
   }

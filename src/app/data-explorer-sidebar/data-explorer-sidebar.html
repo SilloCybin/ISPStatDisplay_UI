@@ -145,7 +145,7 @@
           <form class="example-form">
           <mat-form-field name="numberInput" class="number-input">
             <mat-label>Number</mat-label>
-            <input name="numberInput" [(ngModel)]="selectedNumberOfTimeUnits" matInput placeholder="Ex: 4">
+            <input matInput placeholder="Ex: 4" name="numberInput" [(ngModel)]="selectedNumberOfTimeUnits" (ngModelChange)="onShowDataFromLastSelection()">
           </mat-form-field>
             <mat-form-field name="timeUnitSelect" class="time-unit-select">
               <mat-label>Time unit</mat-label>

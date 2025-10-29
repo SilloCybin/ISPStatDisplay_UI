@@ -120,6 +120,7 @@ export class DataExplorerSidebar {
   }
 
   onShowDataFromLastSelection(){
+    console.log(this.selectedNumberOfTimeUnits);
     const fromLastWindowSetting = new TimeWindowSettings();
     fromLastWindowSetting.isEntireHistory = false;
     fromLastWindowSetting.timeUnitNumber = this.selectedNumberOfTimeUnits;

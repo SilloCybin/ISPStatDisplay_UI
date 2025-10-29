@@ -13,6 +13,7 @@ export type ChartOptions = {
   xaxis: ApexXAxis;
   yaxis?: ApexYAxis | ApexYAxis[];
   title: ApexTitleSubtitle;
+  colors?: string[]
 }
 
 @Component({
@@ -34,6 +35,8 @@ export class MetricChart implements OnInit, OnDestroy {
 
   @ViewChild("chart") chart: ChartComponent | undefined;
 
+  colors: string[] = ['#1d69f6','#5fb602','#ea5900','#bd21fd'];
+
   chartOptions: ChartOptions = {
     series: [],
     chart: {
@@ -46,10 +49,11 @@ export class MetricChart implements OnInit, OnDestroy {
     yaxis: [],
     title: {
       text: ''
-    }
+    },
+    colors: this.colors
   };
 
-  colors: string[] = ['#1d69f6','#5fb602'];
+
 
   constructor(private speedtestService: SpeedtestService) {}
 
@@ -90,7 +94,8 @@ export class MetricChart implements OnInit, OnDestroy {
       let yaxis: any[] = [];
 
       if (this.displayOnTwoYAxis) {
-        yaxis = metrics.map((metric, i) => ({
+        yaxis = metrics.map((metric, i) => (
+          {
           title: {
             text: this.formatMetricName(metric),
             style: {
@@ -108,14 +113,15 @@ export class MetricChart implements OnInit, OnDestroy {
             yaxis: i,
             color: this.colors[i]
           }));
-      }
-
-      this.chartOptions.series = results.map((data, i) => (
+      } else {
+        this.chartOptions.series = results.map((data, i) => (
         {
           name: this.formatMetricName(metrics[i]),
           type: 'line',
           data: data.map(p => [new Date(p.timestamp).getTime(), p.value]),
         }));
+      }
+
       this.chartOptions.yaxis = yaxis;
       this.chartOptions.xaxis = {type: 'datetime'};
       this.chartOptions.title = {text: metrics.map(this.formatMetricName).join(' & ')};

@@ -3,12 +3,40 @@ import {SpeedtestService} from '../services/speedtest-service';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton} from '@angular/material/button';
 import {isMetricDisabled} from '../utils/sidebar-metric-selection-algo';
+import {MatRadioButton, MatRadioChange, MatRadioGroup} from '@angular/material/radio';
+import {MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
+import {FormGroup, FormsModule} from '@angular/forms';
+import {MatOption, MatSelect} from '@angular/material/select';
+import {MatNativeDateModule, provideNativeDateAdapter} from '@angular/material/core';
+import {DatepickerToggleWrapperModule} from './single-date-calendar/single-date-calendar-wrapper';
+import {DoubleDatepickerToggleWrapperModule} from './double-date-calendar/double-date-calendar-wrapper';
+import {TimeWindowSettings} from '../models/classes/time-window';
+
+interface TimeUnit {
+  value: string;
+  viewValue: string;
+}
 
 @Component({
   selector: 'app-data-explorer-sidebar',
   imports: [
     MatIcon,
-    MatButton
+    MatButton,
+    MatRadioButton,
+    MatRadioGroup,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatSelect,
+    FormsModule,
+    MatOption,
+    MatNativeDateModule,
+    DatepickerToggleWrapperModule,
+    DoubleDatepickerToggleWrapperModule
+  ],
+  providers: [
+    provideNativeDateAdapter()
   ],
   templateUrl: './data-explorer-sidebar.html',
   styleUrl: './data-explorer-sidebar.css'
@@ -17,8 +45,21 @@ export class DataExplorerSidebar {
 
   selectedMetrics: string[] = [];
 
-  constructor(private speedTestService: SpeedtestService) {
-  }
+  selectedTimeWindow: string | null = null;
+  timeUnits: TimeUnit[] = [
+    {value: 'days-0', viewValue: 'Days'},
+    {value: 'weeks-1', viewValue: 'Weeks'},
+    {value: 'months-2', viewValue: 'Months'}
+  ]
+
+  selectedNumberOfTimeUnits: number | null | undefined = null;
+  selectedTimeUnit: string | null | undefined = null;
+
+  selectedStartDateToNowStartDate: Date | null = null;
+
+  selectedDateRange: FormGroup | null = null;
+
+  constructor(private speedTestService: SpeedtestService) {}
 
   onMetricSelection(selectedMetric: string) {
     if (this.selectedMetrics.includes(selectedMetric)) {
@@ -29,19 +70,74 @@ export class DataExplorerSidebar {
     this.speedTestService.setSelectedMetrics(this.selectedMetrics);
   }
 
-  isSelected(metric: string): boolean {
+  isMetricSelected(metric: string): boolean {
     return this.selectedMetrics.includes(metric);
   }
 
   isMetricDisabled(metric: string): boolean | undefined {
-    return isMetricDisabled(metric, this.selectedMetrics, this.isSelected(metric));
+    return isMetricDisabled(metric, this.selectedMetrics, this.isMetricSelected(metric));
   }
 
-  clearSelections() {
+  clearMetricsSelection() {
     this.selectedMetrics = [];
     this.speedTestService.setSelectedMetrics(this.selectedMetrics);
   }
 
+  onTimeWindowSelection(event: MatRadioChange){
+    switch (event.value){
+      case 'entireHistory':
+        this.selectedTimeWindow = 'entireHistory';
+        const entireHistoryTimeWindowSetting = new TimeWindowSettings();
+        entireHistoryTimeWindowSetting.isEntireHistory = true;
+        this.setTimeWindowSelection(entireHistoryTimeWindowSetting);
+        break;
+      case 'fromLast':
+        this.selectedTimeWindow = 'fromLast'
+        this.selectedDateRange = null;
+        this.selectedStartDateToNowStartDate = null;
+        break;
+      case 'startDateToNow':
+        this.selectedTimeWindow = 'startDateToNow'
+        this.selectedNumberOfTimeUnits = null;
+        this.selectedTimeUnit = null;
+        this.selectedDateRange = null;
+        break;
+      case 'startDateToEndDate':
+        this.selectedTimeWindow = 'startDateToEndDate'
+        this.selectedNumberOfTimeUnits = null;
+        this.selectedTimeUnit = null;
+        this.selectedStartDateToNowStartDate = null;
+        break;
+      default: break;
+    }
+  }
 
+  onShowDataFromLastSelection(){
+    const fromLastWindowSetting = new TimeWindowSettings();
+    fromLastWindowSetting.isEntireHistory = false;
+    fromLastWindowSetting.timeUnitNumber = this.selectedNumberOfTimeUnits;
+    fromLastWindowSetting.timeUnit = this.selectedTimeUnit;
+    this.speedTestService.setSelectedTimeWindow(fromLastWindowSetting);
+  }
+
+  onStartDateToNowSelection(date: Date) {
+    this.selectedStartDateToNowStartDate = date;
+    const startDateToNowWindowSetting = new TimeWindowSettings();
+    startDateToNowWindowSetting.isEntireHistory = false;
+    startDateToNowWindowSetting.startDate = date;
+    this.speedTestService.setSelectedTimeWindow(startDateToNowWindowSetting);
+  }
+
+  onDateRangeSelection(range: FormGroup) {
+    this.selectedDateRange = range;
+    const startDateToEndDateWindowSetting = new TimeWindowSettings();
+    startDateToEndDateWindowSetting.isEntireHistory = false;
+    startDateToEndDateWindowSetting.dateRange = range;
+    this.speedTestService.setSelectedTimeWindow(startDateToEndDateWindowSetting);
+  }
+
+  setTimeWindowSelection(timeWindowSettings?: TimeWindowSettings){
+    this.speedTestService.setSelectedTimeWindow(timeWindowSettings);
+  }
 
 }

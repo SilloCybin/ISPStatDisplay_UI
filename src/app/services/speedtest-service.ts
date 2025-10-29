@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {BehaviorSubject, catchError, map, Observable, throwError} from 'rxjs';
+import {BehaviorSubject, catchError, map, Observable, startWith, throwError} from 'rxjs';
 import {SpeedtestInterface} from '../models/interfaces/speedtest-interface';
 import {MetricPoint} from '../models/classes/metric-point';
 import {AveragesInterface} from '../models/interfaces/averages-interface';
 import {environment} from '../../environments/environment';
+import {TimeWindowSettings} from '../models/classes/time-window';
+import {determineStartDateFromNow} from '../utils/start-date-calculator';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +17,9 @@ export class SpeedtestService {
 
   private selectedMetricsSubject = new BehaviorSubject<string[]>([]);
   selectedMetric$ = this.selectedMetricsSubject.asObservable();
+
+  private timeWindowSettingsSubject = new BehaviorSubject<TimeWindowSettings>(new TimeWindowSettings());
+  timeWindowSettings$ = this.timeWindowSettingsSubject.asObservable();
 
   constructor(private httpClient: HttpClient) {}
 
@@ -30,12 +35,60 @@ export class SpeedtestService {
     this.selectedMetricsSubject.next(selectedMetrics);
   }
 
-  getMetricPoints(metric: string): Observable<MetricPoint[]> {
-    metric = metric.charAt(0).toUpperCase() + metric.slice(1);
-    return this.httpClient.get<MetricPoint[]>(`${this.apiBaseUrl}/getAll${metric}`)
-      .pipe(
+  getMetricPoints(metric: string, timeWindowSettings: TimeWindowSettings): Observable<MetricPoint[]> {
+    if (timeWindowSettings.timeUnitNumber && timeWindowSettings.timeUnit){
+      const startDate = determineStartDateFromNow(timeWindowSettings.timeUnitNumber, timeWindowSettings.timeUnit);
+      console.log('Coming from service, startDate :', startDate.toISOString());
+
+      return this.httpClient.get<MetricPoint[]>(
+        `${this.apiBaseUrl}/fromStartDate/${metric}`, {
+          params: {
+            startDate: startDate.toISOString().split('T')[0]
+          }
+        }
+      ).pipe(
         catchError(this.handleError)
       );
+
+    } else if (timeWindowSettings.startDate) {
+      console.log('Coming from service, startDate :', timeWindowSettings.startDate.toISOString());
+
+      return this.httpClient.get<MetricPoint[]>(
+        `${this.apiBaseUrl}/fromStartDate/${metric}`, {
+          params: {
+            startDate: timeWindowSettings.startDate.toISOString().split('T')[0]
+          }
+        }
+      ).pipe(
+        catchError(this.handleError)
+      );
+
+    } else if (timeWindowSettings.dateRange) {
+      const startDate = timeWindowSettings.dateRange.get("start");
+      const endDate = timeWindowSettings.dateRange.get("end");
+      console.log('Coming from service, dateRange :', startDate?.value.toISOString(), endDate?.value.toISOString());
+
+      return this.httpClient.get<MetricPoint[]>(
+        `${this.apiBaseUrl}/dateRange/${metric}`, {
+          params: {
+            startDate: startDate?.value.toISOString().split('T')[0],
+            endDate: endDate?.value.toISOString().split('T')[0]
+          }
+        }
+      ).pipe(
+        catchError(this.handleError)
+      );
+
+    } else {
+      // Entire history was selected
+      console.log('Chose entire history', metric);
+
+      return this.httpClient.get<MetricPoint[]>(`${this.apiBaseUrl}/getAll/${metric}`)
+        .pipe(
+          catchError(this.handleError)
+        );
+    }
+
   }
 
   clearSelection() {
@@ -47,6 +100,13 @@ export class SpeedtestService {
       .pipe(
         map(data => ({...data})),
         catchError(this.handleError));
+  }
+
+  setSelectedTimeWindow(timeWindowSettings: TimeWindowSettings | undefined){
+    if (timeWindowSettings instanceof TimeWindowSettings) {
+      console.log('Coming from service - was told to pass this :', timeWindowSettings)
+      this.timeWindowSettingsSubject.next(timeWindowSettings);
+    }
   }
 
   /***************************************

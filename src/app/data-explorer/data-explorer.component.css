@@ -1,6 +1,6 @@
 .data-explorer-layout {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+  grid-template-columns: repeat(5, 1fr); /* 4 equal columns */
   height: 100vh;
 }
 
@@ -12,7 +12,7 @@
 
 .content {
   height: 100%;
-  grid-column: span 3;   /* take 3 columns */
+  grid-column: span 4;   /* take 3 columns */
   background-color: #eee;
 }
 

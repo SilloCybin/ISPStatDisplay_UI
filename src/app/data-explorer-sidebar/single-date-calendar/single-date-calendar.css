@@ -1,0 +1,19 @@
+.form{
+  margin: 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  align-content: flex-end;
+}
+
+.back-from-now{
+  font-style: italic;
+  color: dimgray;
+  margin-bottom: 9px;
+}
+
+.form-container{
+  max-width: 170px;
+  padding-left: 10px;
+  padding-right: 10px;
+}

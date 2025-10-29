@@ -1,9 +1,10 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {SpeedtestService} from '../services/speedtest-service';
 import {MetricPoint} from '../models/classes/metric-point';
-import {combineLatest} from 'rxjs';
 import {ApexAxisChartSeries, ApexChart, ApexTitleSubtitle, ApexXAxis, ApexYAxis, ChartComponent} from 'ng-apexcharts';
 import {MatCheckbox} from '@angular/material/checkbox';
+import {TimeWindowSettings} from '../models/classes/time-window';
+import {combineLatest} from 'rxjs';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -25,11 +26,9 @@ export type ChartOptions = {
 export class MetricChart implements OnInit, OnDestroy {
 
   selectedMetrics: string[] = [];
-  firstMetricSeries: MetricPoint[] = [];
-  secondMetricSeries: MetricPoint[] = [];
   displayOnTwoYAxis: boolean = false;
 
-  colors: string[] = ['#2a8eff', '#68ce00'];
+  timeWindowSettings: TimeWindowSettings = new TimeWindowSettings();
 
   @ViewChild("chart") chart: ChartComponent | undefined;
 
@@ -51,12 +50,33 @@ export class MetricChart implements OnInit, OnDestroy {
   constructor(private speedtestService: SpeedtestService) {}
 
   ngOnInit() {
+
     this.speedtestService.selectedMetric$.subscribe(metrics => {
       this.selectedMetrics = metrics;
       if (this.selectedMetrics.length !== 2){
         this.displayOnTwoYAxis = false;
       }
-      this.updateChart(this.selectedMetrics);
+      if (
+        (this.timeWindowSettings.timeUnitNumber && this.timeWindowSettings.timeUnit)
+        || this.timeWindowSettings.dateRange
+        || this.timeWindowSettings.startDate
+        || this.timeWindowSettings.isEntireHistory
+      ) {
+        console.log('Coming from MetricChartComponent, on selectedMetrics update - Displaying because time settings are defined and metrics selected :', this.timeWindowSettings, this.selectedMetrics);
+        this.updateChart(this.selectedMetrics);
+      } else {
+        console.log('Coming from MetricChartComponent, on selectedMetrics update - Not displaying because time settings are undefined');
+      }
+    })
+
+    this.speedtestService.timeWindowSettings$.subscribe(settings => {
+      this.timeWindowSettings = settings;
+      if (this.selectedMetrics.length) {
+        console.log('Coming from MetricChartComponent, on timeWindowSettings update - Displaying because time settings are defined and metrics selected :', this.timeWindowSettings, this.selectedMetrics);
+        this.updateChart(this.selectedMetrics)
+      } else {
+        console.log('Coming from MetricChartComponent, on timeWindowSettings update - Not displaying because metric selection is empty');
+      }
     })
   }
 
@@ -73,17 +93,17 @@ export class MetricChart implements OnInit, OnDestroy {
       return;
     }
 
-    const observables = metrics.map(m => this.speedtestService.getMetricPoints(m));
+    const observables = metrics.map(m => this.speedtestService.getMetricPoints(m, this.timeWindowSettings));
     combineLatest(observables).subscribe(results => {
+
+      console.log(results);
+
       let yaxis: any[] = [];
 
       if (this.displayOnTwoYAxis) {
         yaxis = metrics.map((metric, i) => ({
           title: {
             text: this.formatMetricName(metric),
-            style: {
-              color: this.colors[i]
-            }
           },
           opposite: (i === 1)
         }));
@@ -93,7 +113,6 @@ export class MetricChart implements OnInit, OnDestroy {
             name: this.formatMetricName(metrics[i]),
             type: 'line',
             data: data.map(p => [new Date(p.timestamp).getTime(), p.value]),
-            color: this.colors[i],
             yaxis: i
           }));
       }
@@ -103,7 +122,6 @@ export class MetricChart implements OnInit, OnDestroy {
           name: this.formatMetricName(metrics[i]),
           type: 'line',
           data: data.map(p => [new Date(p.timestamp).getTime(), p.value]),
-          color: this.colors[i]
         }));
       this.chartOptions.yaxis = yaxis;
       this.chartOptions.xaxis = {type: 'datetime'};
@@ -111,7 +129,7 @@ export class MetricChart implements OnInit, OnDestroy {
 
       setTimeout(() => {
         this.chart?.updateOptions(this.chartOptions, true, true);
-      }, 200);
+      }, 150);
     });
   }
 
@@ -130,8 +148,6 @@ export class MetricChart implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.firstMetricSeries = [];
-    this.secondMetricSeries = [];
     this.selectedMetrics = [];
     this.speedtestService.clearSelection();
   }

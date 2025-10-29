@@ -1,0 +1,14 @@
+<span class="form">
+  <p class="back-from-now">From</p>
+  <div>
+  <mat-form-field name="dateSelector"  class="form-container">
+    <mat-label>MM/DD/YYYY</mat-label>
+    <input matInput [min]="minDate" [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="onDateChange()">
+    <mat-datepicker-toggle matSuffix [for]="picker">
+      <mat-icon matDatepickerToggleIcon>calendar_month</mat-icon>
+    </mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+    </div>
+  <p class="back-from-now">to now</p>
+</span>

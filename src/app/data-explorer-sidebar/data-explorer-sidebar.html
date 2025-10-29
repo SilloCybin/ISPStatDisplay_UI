@@ -1,21 +1,24 @@
 <div class="container">
-  <nav class="title-section-container">
-    <h2>Metrics</h2>
-    <button class="icon-right" matButton="elevated" (click)="clearSelections()"><mat-icon>refresh</mat-icon> Clear selections</button>
-  </nav>
+  <div class="title-section-container">
+    <h2>Metric</h2>
+    <button matButton="elevated" (click)="clearMetricsSelection()">
+      <mat-icon>refresh</mat-icon>
+      Clear selection
+    </button>
+  </div>
   <ul>
     <li><strong>Bandwidth measurements</strong></li>
     <ul>
       <li class="metric" (click)="onMetricSelection('downloadBandwidth')"
-          [class.isSelected]="isSelected('downloadBandwidth')"
+          [class.isSelected]="isMetricSelected('downloadBandwidth')"
           [class.disabled]="isMetricDisabled('downloadBandwidth')">Download Bandwidth
-        @if (isSelected('downloadBandwidth')) {
+        @if (isMetricSelected('downloadBandwidth')) {
           <mat-icon>check-icon</mat-icon>
         }</li>
       <li class="metric" (click)="onMetricSelection('uploadBandwidth')"
-          [class.isSelected]="isSelected('uploadBandwidth')"
+          [class.isSelected]="isMetricSelected('uploadBandwidth')"
           [class.disabled]="isMetricDisabled('uploadBandwidth')">Upload Bandwidth
-        @if (isSelected('uploadBandwidth')) {
+        @if (isMetricSelected('uploadBandwidth')) {
           <mat-icon>check-icon</mat-icon>
         }</li>
     </ul>
@@ -25,23 +28,23 @@
       <li><strong>Latency</strong></li>
       <ul>
         <li class="metric" (click)="onMetricSelection('downloadPingLatency')"
-            [class.isSelected]="isSelected('downloadPingLatency')"
+            [class.isSelected]="isMetricSelected('downloadPingLatency')"
             [class.disabled]="isMetricDisabled('downloadPingLatency')">Download Ping Latency
-          @if (isSelected('downloadPingLatency')) {
+          @if (isMetricSelected('downloadPingLatency')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('uploadPingLatency')"
-            [class.isSelected]="isSelected('uploadPingLatency')"
+            [class.isSelected]="isMetricSelected('uploadPingLatency')"
             [class.disabled]="isMetricDisabled('uploadPingLatency')">Upload Ping Latency
-          @if (isSelected('uploadPingLatency')) {
+          @if (isMetricSelected('uploadPingLatency')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('idlePingLatency')"
-            [class.isSelected]="isSelected('idlePingLatency')"
+            [class.isSelected]="isMetricSelected('idlePingLatency')"
             [class.disabled]="isMetricDisabled('idlePingLatency')">Idle Ping Latency
-          @if (isSelected('idlePingLatency')) {
+          @if (isMetricSelected('idlePingLatency')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
@@ -49,23 +52,23 @@
       <li><strong>Low</strong></li>
       <ul>
         <li class="metric" (click)="onMetricSelection('downloadPingLow')"
-            [class.isSelected]="isSelected('downloadPingLow')"
+            [class.isSelected]="isMetricSelected('downloadPingLow')"
             [class.disabled]="isMetricDisabled('downloadPingLow')">Download Ping Low
-          @if (isSelected('downloadPingLow')) {
+          @if (isMetricSelected('downloadPingLow')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('uploadPingLow')"
-            [class.isSelected]="isSelected('uploadPingLow')"
+            [class.isSelected]="isMetricSelected('uploadPingLow')"
             [class.disabled]="isMetricDisabled('uploadPingLow')">Upload Ping Low
-          @if (isSelected('uploadPingLow')) {
+          @if (isMetricSelected('uploadPingLow')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('idlePingLow')"
-            [class.isSelected]="isSelected('idlePingLow')"
+            [class.isSelected]="isMetricSelected('idlePingLow')"
             [class.disabled]="isMetricDisabled('idlePingLow')">Idle Ping Low
-          @if (isSelected('idlePingLow')) {
+          @if (isMetricSelected('idlePingLow')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
@@ -73,23 +76,23 @@
       <li><strong>High</strong></li>
       <ul>
         <li class="metric" (click)="onMetricSelection('downloadPingHigh')"
-            [class.isSelected]="isSelected('downloadPingHigh')"
+            [class.isSelected]="isMetricSelected('downloadPingHigh')"
             [class.disabled]="isMetricDisabled('downloadPingHigh')">Download Ping High
-          @if (isSelected('downloadPingHigh')) {
+          @if (isMetricSelected('downloadPingHigh')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('uploadPingHigh')"
-            [class.isSelected]="isSelected('uploadPingHigh')"
+            [class.isSelected]="isMetricSelected('uploadPingHigh')"
             [class.disabled]="isMetricDisabled('uploadPingHigh')">Upload Ping High
-          @if (isSelected('uploadPingHigh')) {
+          @if (isMetricSelected('uploadPingHigh')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('idlePingHigh')"
-            [class.isSelected]="isSelected('idlePingHigh')"
+            [class.isSelected]="isMetricSelected('idlePingHigh')"
             [class.disabled]="isMetricDisabled('idlePingHigh')">Idle Ping High
-          @if (isSelected('idlePingHigh')) {
+          @if (isMetricSelected('idlePingHigh')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
@@ -97,23 +100,23 @@
       <li><strong>Jitter</strong></li>
       <ul>
         <li class="metric" (click)="onMetricSelection('downloadPingJitter')"
-            [class.isSelected]="isSelected('downloadPingJitter')"
+            [class.isSelected]="isMetricSelected('downloadPingJitter')"
             [class.disabled]="isMetricDisabled('downloadPingJitter')">Download Ping Jitter
-          @if (isSelected('downloadPingJitter')) {
+          @if (isMetricSelected('downloadPingJitter')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('uploadPingJitter')"
-            [class.isSelected]="isSelected('uploadPingJitter')"
+            [class.isSelected]="isMetricSelected('uploadPingJitter')"
             [class.disabled]="isMetricDisabled('uploadPingJitter')">Upload Ping Jitter
-          @if (isSelected('uploadPingJitter')) {
+          @if (isMetricSelected('uploadPingJitter')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
         <li class="metric" (click)="onMetricSelection('idlePingJitter')"
-            [class.isSelected]="isSelected('idlePingJitter')"
+            [class.isSelected]="isMetricSelected('idlePingJitter')"
             [class.disabled]="isMetricDisabled('idlePingJitter')">Idle Ping Jitter
-          @if (isSelected('idlePingJitter')) {
+          @if (isMetricSelected('idlePingJitter')) {
             <mat-icon>check-icon</mat-icon>
           }
         </li>
@@ -121,11 +124,58 @@
     </ul>
     <br>
     <li class="metric" (click)="onMetricSelection('packetLoss')"
-        [class.isSelected]="isSelected('packetLoss')"
+        [class.isSelected]="isMetricSelected('packetLoss')"
         [class.disabled]="isMetricDisabled('packetLoss')"><strong>Packet Loss</strong>
-      @if (isSelected('packetLoss')) {
+      @if (isMetricSelected('packetLoss')) {
         <mat-icon>check-icon</mat-icon>
       }
     </li>
   </ul>
+  <br>
+  <div>
+    <nav class="title-section-container">
+      <h2>Time window</h2>
+    </nav>
+    <mat-radio-group [(ngModel)]="selectedTimeWindow" class="radio-button-container" aria-label="Select an option"
+                     (change)="onTimeWindowSelection($event)">
+      <mat-radio-button name="time-window-selection" value="entireHistory">Entire history</mat-radio-button>
+      <mat-radio-button name="time-window-selection" value="fromLast">Show data from last...</mat-radio-button>
+      @if (selectedTimeWindow === 'fromLast') {
+        <span class="form">
+          <form class="example-form">
+          <mat-form-field name="numberInput" class="number-input">
+            <mat-label>Number</mat-label>
+            <input name="numberInput" [(ngModel)]="selectedNumberOfTimeUnits" matInput placeholder="Ex: 4">
+          </mat-form-field>
+            <mat-form-field name="timeUnitSelect" class="time-unit-select">
+              <mat-label>Time unit</mat-label>
+              <mat-select name="timeUnit" [(ngModel)]="selectedTimeUnit" (selectionChange)="onShowDataFromLastSelection()">
+              @for (timeUnit of timeUnits; track timeUnit) {
+                <mat-option [value]="timeUnit.value">{{ timeUnit.viewValue }}</mat-option>
+              }
+              </mat-select>
+            </mat-form-field>
+          </form>
+        </span>
+      }
+      <mat-radio-button name="time-window-selection" value="startDateToNow">From start date to now</mat-radio-button>
+      @if (selectedTimeWindow === 'startDateToNow') {
+        <span class="form">
+          <app-datepicker-toggle-wrapper (selectedDateEmitter)="onStartDateToNowSelection($event)"></app-datepicker-toggle-wrapper>
+        </span>
+      }
+      <mat-radio-button name="time-window-selection" value="startDateToEndDate">From start date to end date</mat-radio-button>
+      @if (selectedTimeWindow === 'startDateToEndDate') {
+        <span class="form-date-range">
+          <app-double-datepicker-toggle-wrapper (selectedDateRangeEmitter)="onDateRangeSelection($event)"></app-double-datepicker-toggle-wrapper>
+        </span>
+      }
+    </mat-radio-group>
+  </div>
+  <!--<div class="display-button-section-container">
+    <button matButton="elevated" (click)="setSelectedMetrics()">
+      <mat-icon>monitoring</mat-icon>
+      Display selection
+    </button>
+  </div>-->
 </div>

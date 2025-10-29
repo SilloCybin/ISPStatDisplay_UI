@@ -123,7 +123,7 @@ export class DataExplorerSidebar {
     fromLastWindowSetting.isEntireHistory = false;
     fromLastWindowSetting.timeUnitNumber = this.selectedNumberOfTimeUnits;
     fromLastWindowSetting.timeUnit = this.selectedTimeUnit;
-    if (this.selectedTimeUnit) {
+    if (this.selectedNumberOfTimeUnits && this.selectedTimeUnit) {
       this.speedTestService.setSelectedTimeWindow(fromLastWindowSetting);
     }
   }

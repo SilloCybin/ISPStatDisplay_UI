@@ -151,7 +151,11 @@
               <mat-label>Time unit</mat-label>
               <mat-select name="timeUnit" [(ngModel)]="selectedTimeUnit" (selectionChange)="onShowDataFromLastSelection()">
               @for (timeUnit of timeUnits; track timeUnit) {
-                <mat-option [value]="timeUnit.value">{{ timeUnit.viewValue }}</mat-option>
+                @if (selectedNumberOfTimeUnits === 1){
+                  <mat-option [value]="timeUnit.value">{{ timeUnit.viewValueSingular }}</mat-option>
+                } @else {
+                  <mat-option [value]="timeUnit.value">{{ timeUnit.viewValuePlural }}</mat-option>
+                }
               }
               </mat-select>
             </mat-form-field>

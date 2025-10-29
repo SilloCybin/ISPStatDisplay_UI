@@ -15,7 +15,8 @@ import {TimeWindowSettings} from '../models/classes/time-window';
 
 interface TimeUnit {
   value: string;
-  viewValue: string;
+  viewValueSingular: string;
+  viewValuePlural: string;
 }
 
 @Component({
@@ -47,9 +48,9 @@ export class DataExplorerSidebar {
 
   selectedTimeWindow: string | null = null;
   timeUnits: TimeUnit[] = [
-    {value: 'days-0', viewValue: 'Days'},
-    {value: 'weeks-1', viewValue: 'Weeks'},
-    {value: 'months-2', viewValue: 'Months'}
+    {value: 'days-0', viewValueSingular: 'Day', viewValuePlural: 'Days'},
+    {value: 'weeks-1', viewValueSingular: 'Week', viewValuePlural: 'Weeks'},
+    {value: 'months-2', viewValueSingular: 'Month', viewValuePlural: 'Months'}
   ]
 
   selectedNumberOfTimeUnits: number | null | undefined = null;

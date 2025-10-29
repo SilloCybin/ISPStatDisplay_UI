@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {SpeedtestService} from '../services/speedtest-service';
-import {MetricPoint} from '../models/classes/metric-point';
 import {ApexAxisChartSeries, ApexChart, ApexTitleSubtitle, ApexXAxis, ApexYAxis, ChartComponent} from 'ng-apexcharts';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {TimeWindowSettings} from '../models/classes/time-window';
@@ -52,8 +51,6 @@ export class MetricChart implements OnInit, OnDestroy {
     },
     colors: this.colors
   };
-
-
 
   constructor(private speedtestService: SpeedtestService) {}
 

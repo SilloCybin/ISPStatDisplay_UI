@@ -12,6 +12,9 @@ export function determineStartDateFromNow(timeUnitNumber: number, timeUnit: stri
     case 'months-2':
       startDate.setMonth(now.getMonth() - timeUnitNumber);
       break;
+    case 'years-3':
+      startDate.setFullYear(now.getFullYear() - timeUnitNumber);
+      break;
     default:
       throw new Error(`Invalid time unit: ${timeUnit}`);
   }

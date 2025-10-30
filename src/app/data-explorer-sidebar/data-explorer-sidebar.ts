@@ -4,7 +4,7 @@ import {MatIcon} from '@angular/material/icon';
 import {MatButton} from '@angular/material/button';
 import {isMetricDisabled} from '../utils/sidebar-metric-selection-algo';
 import {MatRadioButton, MatRadioChange, MatRadioGroup} from '@angular/material/radio';
-import {MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
+import {MatError, MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {FormGroup, FormsModule} from '@angular/forms';
 import {MatOption, MatSelect} from '@angular/material/select';
@@ -12,6 +12,7 @@ import {MatNativeDateModule, provideNativeDateAdapter} from '@angular/material/c
 import {DatepickerToggleWrapperModule} from './single-date-calendar/single-date-calendar-wrapper';
 import {DoubleDatepickerToggleWrapperModule} from './double-date-calendar/double-date-calendar-wrapper';
 import {TimeWindowSettings} from '../models/classes/time-window';
+import {debounceTime, Subject} from 'rxjs';
 
 interface TimeUnit {
   value: string;
@@ -34,7 +35,8 @@ interface TimeUnit {
     MatOption,
     MatNativeDateModule,
     DatepickerToggleWrapperModule,
-    DoubleDatepickerToggleWrapperModule
+    DoubleDatepickerToggleWrapperModule,
+    MatError
   ],
   providers: [
     provideNativeDateAdapter()
@@ -50,8 +52,11 @@ export class DataExplorerSidebar {
   timeUnits: TimeUnit[] = [
     {value: 'days-0', viewValueSingular: 'Day', viewValuePlural: 'Days'},
     {value: 'weeks-1', viewValueSingular: 'Week', viewValuePlural: 'Weeks'},
-    {value: 'months-2', viewValueSingular: 'Month', viewValuePlural: 'Months'}
+    {value: 'months-2', viewValueSingular: 'Month', viewValuePlural: 'Months'},
+    {value: 'years-3', viewValueSingular: 'Year', viewValuePlural: 'Years'}
   ]
+
+  private valueChanged = new Subject<number>();
 
   selectedNumberOfTimeUnits: number | null | undefined = null;
   selectedTimeUnit: string | null | undefined = null;
@@ -60,7 +65,12 @@ export class DataExplorerSidebar {
 
   selectedDateRange: FormGroup | null = null;
 
-  constructor(private speedTestService: SpeedtestService) {}
+  constructor(private speedTestService: SpeedtestService) {
+    this.valueChanged.pipe(debounceTime(1000)).subscribe((value) => {
+      this.selectedNumberOfTimeUnits = value;
+      this.onShowDataFromLastSelection();
+    })
+  }
 
   onMetricSelection(selectedMetric: string) {
     if (this.selectedMetrics.includes(selectedMetric)) {
@@ -90,8 +100,8 @@ export class DataExplorerSidebar {
     this.speedTestService.setSelectedTimeWindow(new TimeWindowSettings());
   }
 
-  onTimeWindowSelection(event: MatRadioChange){
-    switch (event.value){
+  onTimeWindowSelection(event: MatRadioChange) {
+    switch (event.value) {
       case 'entireHistory':
         this.selectedTimeWindow = 'entireHistory';
         const entireHistoryTimeWindowSetting = new TimeWindowSettings();
@@ -115,17 +125,27 @@ export class DataExplorerSidebar {
         this.selectedTimeUnit = null;
         this.selectedStartDateToNowStartDate = null;
         break;
-      default: break;
+      default:
+        break;
     }
   }
 
-  onShowDataFromLastSelection(){
-    console.log(this.selectedNumberOfTimeUnits);
+  onNumberInputChange(value: number) {
+    this.valueChanged.next(value);
+  }
+
+  onShowDataFromLastSelection() {
     const fromLastWindowSetting = new TimeWindowSettings();
-    fromLastWindowSetting.isEntireHistory = false;
-    fromLastWindowSetting.timeUnitNumber = this.selectedNumberOfTimeUnits;
-    fromLastWindowSetting.timeUnit = this.selectedTimeUnit;
-    if (this.selectedNumberOfTimeUnits && this.selectedTimeUnit) {
+    if (
+      this.selectedTimeUnit
+      && this.selectedNumberOfTimeUnits
+      && this.selectedNumberOfTimeUnits > 0
+      && this.selectedNumberOfTimeUnits < 53
+      && Number.isFinite(this.selectedNumberOfTimeUnits)
+    ) {
+      fromLastWindowSetting.isEntireHistory = false;
+      fromLastWindowSetting.timeUnitNumber = this.selectedNumberOfTimeUnits;
+      fromLastWindowSetting.timeUnit = this.selectedTimeUnit;
       this.speedTestService.setSelectedTimeWindow(fromLastWindowSetting);
     }
   }
@@ -146,7 +166,7 @@ export class DataExplorerSidebar {
     this.speedTestService.setSelectedTimeWindow(startDateToEndDateWindowSetting);
   }
 
-  setTimeWindowSelection(timeWindowSettings?: TimeWindowSettings){
+  setTimeWindowSelection(timeWindowSettings?: TimeWindowSettings) {
     this.speedTestService.setSelectedTimeWindow(timeWindowSettings);
   }
 

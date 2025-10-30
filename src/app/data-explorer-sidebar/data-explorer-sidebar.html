@@ -138,7 +138,6 @@
     </nav>
     <mat-radio-group [(ngModel)]="selectedTimeWindow" class="radio-button-container" aria-label="Select an option"
                      (change)="onTimeWindowSelection($event)">
-      <mat-radio-button name="time-window-selection" value="entireHistory">Entire history</mat-radio-button>
       <mat-radio-button name="time-window-selection" value="fromLast">Show data from last...</mat-radio-button>
       @if (selectedTimeWindow === 'fromLast') {
         <span class="form">
@@ -152,8 +151,6 @@
               <mat-error>Value must be at least 1</mat-error>
             } @else if (numberInput.hasError('max')) {
               <mat-error>Value cannot exceed 52</mat-error>
-            } @else if (numberInput.hasError('step')){
-              <mat-error>Value must be an integer</mat-error>
             }
           </mat-form-field>
             <mat-form-field name="timeUnitSelect" class="time-unit-select">
@@ -187,12 +184,7 @@
             (selectedDateRangeEmitter)="onDateRangeSelection($event)"></app-double-datepicker-toggle-wrapper>
         </span>
       }
+      <mat-radio-button name="time-window-selection" value="entireHistory">Entire history</mat-radio-button>
     </mat-radio-group>
   </div>
-  <!--<div class="display-button-section-container">
-    <button matButton="elevated" (click)="setSelectedMetrics()">
-      <mat-icon>monitoring</mat-icon>
-      Display selection
-    </button>
-  </div>-->
 </div>

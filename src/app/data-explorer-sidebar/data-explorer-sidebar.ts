@@ -4,7 +4,7 @@ import {MatIcon} from '@angular/material/icon';
 import {MatButton} from '@angular/material/button';
 import {isMetricDisabled} from '../utils/sidebar-metric-selection-algo';
 import {MatRadioButton, MatRadioChange, MatRadioGroup} from '@angular/material/radio';
-import {MatError, MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
+import {MatError, MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {FormGroup, FormsModule} from '@angular/forms';
 import {MatOption, MatSelect} from '@angular/material/select';
@@ -13,12 +13,7 @@ import {DatepickerToggleWrapperModule} from './single-date-calendar/single-date-
 import {DoubleDatepickerToggleWrapperModule} from './double-date-calendar/double-date-calendar-wrapper';
 import {TimeWindowSettings} from '../models/classes/time-window';
 import {debounceTime, Subject} from 'rxjs';
-
-interface TimeUnit {
-  value: string;
-  viewValueSingular: string;
-  viewValuePlural: string;
-}
+import {TimeUnit} from '../models/interfaces/time-unit-interface';
 
 @Component({
   selector: 'app-data-explorer-sidebar',
@@ -47,8 +42,8 @@ interface TimeUnit {
 export class DataExplorerSidebar {
 
   selectedMetrics: string[] = [];
-
   selectedTimeWindow: string | null = null;
+
   timeUnits: TimeUnit[] = [
     {value: 'days-0', viewValueSingular: 'Day', viewValuePlural: 'Days'},
     {value: 'weeks-1', viewValueSingular: 'Week', viewValuePlural: 'Weeks'},
@@ -56,17 +51,14 @@ export class DataExplorerSidebar {
     {value: 'years-3', viewValueSingular: 'Year', viewValuePlural: 'Years'}
   ]
 
-  private valueChanged = new Subject<number>();
-
+  private selectedNumberOfTimeUnitsSubject = new Subject<number>();
   selectedNumberOfTimeUnits: number | null | undefined = null;
   selectedTimeUnit: string | null | undefined = null;
-
   selectedStartDateToNowStartDate: Date | null = null;
-
   selectedDateRange: FormGroup | null = null;
 
   constructor(private speedTestService: SpeedtestService) {
-    this.valueChanged.pipe(debounceTime(1000)).subscribe((value) => {
+    this.selectedNumberOfTimeUnitsSubject.pipe(debounceTime(1000)).subscribe((value) => {
       this.selectedNumberOfTimeUnits = value;
       this.onShowDataFromLastSelection();
     })
@@ -131,7 +123,7 @@ export class DataExplorerSidebar {
   }
 
   onNumberInputChange(value: number) {
-    this.valueChanged.next(value);
+    this.selectedNumberOfTimeUnitsSubject.next(value);
   }
 
   onShowDataFromLastSelection() {

@@ -43,7 +43,7 @@ export class SpeedtestService {
       return this.httpClient.get<MetricPoint[]>(
         `${this.apiBaseUrl}/fromStartDate/${metric}`, {
           params: {
-            startDate: startDate.toISOString().split('T')[0]
+            startDate: startDate.toISOString()
           }
         }
       ).pipe(
@@ -55,7 +55,7 @@ export class SpeedtestService {
       return this.httpClient.get<MetricPoint[]>(
         `${this.apiBaseUrl}/fromStartDate/${metric}`, {
           params: {
-            startDate: timeWindowSettings.startDate.toISOString().split('T')[0]
+            startDate: timeWindowSettings.startDate.toISOString()
           }
         }
       ).pipe(
@@ -70,8 +70,8 @@ export class SpeedtestService {
       return this.httpClient.get<MetricPoint[]>(
         `${this.apiBaseUrl}/dateRange/${metric}`, {
           params: {
-            startDate: startDate?.value.toISOString().split('T')[0],
-            endDate: endDate?.value.toISOString().split('T')[0]
+            startDate: startDate?.value.toISOString(),
+            endDate: endDate?.value.toISOString()
           }
         }
       ).pipe(

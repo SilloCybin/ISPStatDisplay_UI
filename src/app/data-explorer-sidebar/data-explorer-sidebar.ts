@@ -170,4 +170,7 @@ export class DataExplorerSidebar {
     this.speedTestService.setSelectedTimeWindow(timeWindowSettings);
   }
 
+  isTimeWindowDisabled() {
+    return (!this.selectedMetrics.length && !this.selectedTimeWindow);
+  }
 }

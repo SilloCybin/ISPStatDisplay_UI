@@ -28,7 +28,7 @@ export type ChartOptions = {
 export class MetricChart implements OnInit, OnDestroy {
 
   selectedMetrics: string[] = [];
-  displayOnTwoYAxis: boolean = false;
+  displayOnTwoYAxesOption: boolean = false;
 
   timeWindowSettings: TimeWindowSettings = new TimeWindowSettings();
 
@@ -59,17 +59,17 @@ export class MetricChart implements OnInit, OnDestroy {
     this.speedtestService.selectedMetric$.subscribe(metrics => {
       this.selectedMetrics = metrics;
       if (this.selectedMetrics.length !== 2){
-        this.displayOnTwoYAxis = false;
+        this.displayOnTwoYAxesOption = false;
       }
       this.updateChart(this.selectedMetrics);
-    })
+    });
 
     this.speedtestService.timeWindowSettings$.subscribe(settings => {
       this.timeWindowSettings = settings;
       if (this.selectedMetrics.length) {
         this.updateChart(this.selectedMetrics)
       }
-    })
+    });
   }
 
   updateChart(metrics: string[]) {
@@ -90,7 +90,7 @@ export class MetricChart implements OnInit, OnDestroy {
 
       let yaxis: any[] = [];
 
-      if (this.displayOnTwoYAxis) {
+      if (this.displayOnTwoYAxesOption) {
         yaxis = metrics.map((metric, i) => (
           {
           title: {
@@ -149,7 +149,7 @@ export class MetricChart implements OnInit, OnDestroy {
   }
 
   onTwoYAxisDisplayCheckboxToggle(checked: boolean) {
-    this.displayOnTwoYAxis = checked;
+    this.displayOnTwoYAxesOption = checked;
     this.updateChart(this.selectedMetrics);
   }
 }

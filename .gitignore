@@ -44,4 +44,5 @@ Thumbs.db
 
 # Personal configurations
 src/environments/environment.ts
-src/environments/environment.pi.ts
+src/environments/environment.pi-mongodb.ts
+src/environments/environment.pi-mysql.ts

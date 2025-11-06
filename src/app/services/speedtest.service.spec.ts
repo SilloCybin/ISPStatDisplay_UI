@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SpeedtestService } from './speedtest-service';
+import { SpeedtestService } from './speedtest.service';
 
 describe('SpeedtestService', () => {
   let service: SpeedtestService;

@@ -1,4 +1,4 @@
-import {PingInterface} from './ping-interface';
+import {PingInterface} from './ping.interface';
 
 export interface IdlePingInterface extends PingInterface{
 }

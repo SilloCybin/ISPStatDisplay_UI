@@ -1,16 +1,17 @@
 import {Component, inject, OnDestroy, OnInit} from '@angular/core';
-import {SpeedtestService} from '../services/speedtest-service';
-import {SpeedtestInterface} from '../models/interfaces/speedtest-interface';
-import {Subscription} from 'rxjs';
+import {SpeedtestService} from '../services/speedtest.service';
+import {SpeedtestInterface} from '../models/interfaces/speedtest.interface';
+import {Observable, Subscription} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
-import {ServerInterface} from '../models/interfaces/server-interface';
+import {ServerInterface} from '../models/interfaces/server.interface';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
 import {CarouselItem} from '../models/classes/carousel-item';
 import {SlickCarouselModule} from 'ngx-slick-carousel';
-import {AveragesInterface} from '../models/interfaces/averages-interface';
+import {AveragesInterface} from '../models/interfaces/averages.interface';
 import {combineLatest} from 'rxjs';
 import {MeasurementType} from '../models/enums/measurement-type';
 import {MatIcon} from '@angular/material/icon';
+import {SpeedtestStreamService} from '../services/speedtest-stream.service';
 
 
 @Component({
@@ -23,16 +24,18 @@ import {MatIcon} from '@angular/material/icon';
     SlickCarouselModule,
     MatIcon,
   ],
-  templateUrl: './home-page.html',
-  styleUrl: './home-page.css'
+  templateUrl: './home-page.component.html',
+  styleUrl: './home-page.component.css'
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePageComponent implements OnInit, OnDestroy {
 
   latestTest: SpeedtestInterface | null = null;
   timestamp: Date | undefined;
   prettyTimestamp: string | undefined;
 
   averages: AveragesInterface | null = null;
+
+  subscriptions: Subscription[] = [];
 
   carouselItemList: CarouselItem[] = [];
   carouselConfig = {
@@ -47,20 +50,33 @@ export class HomePage implements OnInit, OnDestroy {
   };
 
   readonly dialog = inject(MatDialog);
-  private subscription: Subscription | null = null;
+  protected readonly MeasurementType = MeasurementType;
 
-  constructor(private speedtestService: SpeedtestService) {
-  }
+  constructor(private speedtestService: SpeedtestService, private speedtestStreamService: SpeedtestStreamService) {}
 
   ngOnInit() {
+    const speedtest$: Observable<SpeedtestInterface> = this.speedtestService.getLatestTest();
+    const averages$: Observable<AveragesInterface> = this.speedtestService.getMetricsAverages();
 
-    const speedtest$ = this.speedtestService.getLatestTest();
-    const averages$ = this.speedtestService.getMetricsAverages();
+    const streamAverages$: Observable<AveragesInterface> = this.speedtestStreamService.getAveragesStream();
+    const streamSpeedtestData$: Observable<SpeedtestInterface> = this.speedtestStreamService.getSpeedtestDataStream();
 
-    combineLatest([speedtest$, averages$]).subscribe({
+    this.loadUpdatedData(averages$, speedtest$);
+    this.loadUpdatedData(streamAverages$, streamSpeedtestData$);
+  }
+
+  loadUpdatedData(averages$: Observable<AveragesInterface>, speedtestData$: Observable<SpeedtestInterface>){
+
+    const combinedSub: Subscription = combineLatest([speedtestData$, averages$]).subscribe({
       next: ([speedtest, averages]) => {
+
+        this.carouselItemList = [];
+
         this.latestTest = speedtest;
         this.averages = averages;
+
+        console.log(this.latestTest);
+        console.log(this.averages);
 
         this.timestamp = new Date(speedtest.timestamp);
         this.prettyTimestamp = this.timestamp.toLocaleString();
@@ -144,10 +160,11 @@ export class HomePage implements OnInit, OnDestroy {
           this.latestTest?.packetLoss, this.averages?.packetLoss,
           2);
         this.carouselItemList.push(packetLossCarouselItem);
-
       },
       error: (error) => console.error('Error fetching data:', error.message)
-    })
+    });
+
+    this.subscriptions.push(combinedSub);
   }
 
   makeBandwidthPretty(uglyNumber: number): string {
@@ -159,9 +176,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.subscriptions.forEach(sub => sub.unsubscribe())
   }
 
   openDialog(): void {
@@ -177,7 +192,6 @@ export class HomePage implements OnInit, OnDestroy {
     })
   }
 
-  protected readonly MeasurementType = MeasurementType;
 }
 
 @Component({

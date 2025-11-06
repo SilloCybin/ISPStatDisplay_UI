@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {SpeedtestService} from '../services/speedtest-service';
+import {SpeedtestService} from '../services/speedtest.service';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton} from '@angular/material/button';
 import {isMetricDisabled} from '../utils/sidebar-metric-selection-algo';
@@ -13,7 +13,7 @@ import {DatepickerToggleWrapperModule} from './single-date-calendar/single-date-
 import {DoubleDatepickerToggleWrapperModule} from './double-date-calendar/double-date-calendar-wrapper';
 import {TimeWindowSettings} from '../models/classes/time-window';
 import {debounceTime, Subject} from 'rxjs';
-import {TimeUnit} from '../models/interfaces/time-unit-interface';
+import {TimeUnit} from '../models/interfaces/time-unit.interface';
 
 @Component({
   selector: 'app-data-explorer-sidebar',
@@ -36,10 +36,10 @@ import {TimeUnit} from '../models/interfaces/time-unit-interface';
   providers: [
     provideNativeDateAdapter()
   ],
-  templateUrl: './data-explorer-sidebar.html',
-  styleUrl: './data-explorer-sidebar.css'
+  templateUrl: './data-explorer-sidebar.component.html',
+  styleUrl: './data-explorer-sidebar.component.css'
 })
-export class DataExplorerSidebar {
+export class DataExplorerSidebarComponent {
 
   selectedMetrics: string[] = [];
   selectedTimeWindow: string | null = null;

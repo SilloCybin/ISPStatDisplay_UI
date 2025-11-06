@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {BehaviorSubject, catchError, map, Observable, startWith, throwError} from 'rxjs';
-import {SpeedtestInterface} from '../models/interfaces/speedtest-interface';
+import {SpeedtestInterface} from '../models/interfaces/speedtest.interface';
 import {MetricPoint} from '../models/classes/metric-point';
-import {AveragesInterface} from '../models/interfaces/averages-interface';
+import {AveragesInterface} from '../models/interfaces/averages.interface';
 import {environment} from '../../environments/environment';
 import {TimeWindowSettings} from '../models/classes/time-window';
 import {determineStartDateFromNow} from '../utils/start-date-calculator';

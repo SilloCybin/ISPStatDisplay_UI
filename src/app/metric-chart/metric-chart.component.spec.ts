@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DataExplorerSidebar } from './data-explorer-sidebar';
+import { MetricChartComponent } from './metric-chart.component';
 
-describe('DataExplorerSidebar', () => {
-  let component: DataExplorerSidebar;
-  let fixture: ComponentFixture<DataExplorerSidebar>;
+describe('MetricChartComponent', () => {
+  let component: MetricChartComponent;
+  let fixture: ComponentFixture<MetricChartComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DataExplorerSidebar]
+      imports: [MetricChartComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DataExplorerSidebar);
+    fixture = TestBed.createComponent(MetricChartComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

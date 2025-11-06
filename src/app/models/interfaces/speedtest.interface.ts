@@ -1,7 +1,7 @@
-import {IdlePingInterface} from './idle-ping-interface';
-import {UploadTestInterface} from './upload-test-interface';
-import {DownloadTestInterface} from './download-test-interface';
-import {ServerInterface} from './server-interface';
+import {IdlePingInterface} from './idle-ping.interface';
+import {UploadTestInterface} from './upload-test.interface';
+import {DownloadTestInterface} from './download-test.interface';
+import {ServerInterface} from './server.interface';
 
 export interface SpeedtestInterface {
   id: number

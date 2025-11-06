@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import {DataExplorerSidebar} from '../data-explorer-sidebar/data-explorer-sidebar';
+import {DataExplorerSidebarComponent} from '../data-explorer-sidebar/data-explorer-sidebar.component';
 import {RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-data-explorer',
   imports: [
-    DataExplorerSidebar,
+    DataExplorerSidebarComponent,
     RouterOutlet
   ],
   templateUrl: './data-explorer.component.html',

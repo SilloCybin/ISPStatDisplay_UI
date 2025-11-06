@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {SpeedtestService} from '../services/speedtest-service';
+import {SpeedtestService} from '../services/speedtest.service';
 import {ApexAxisChartSeries, ApexChart, ApexTitleSubtitle, ApexXAxis, ApexYAxis, ChartComponent} from 'ng-apexcharts';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {TimeWindowSettings} from '../models/classes/time-window';
@@ -22,10 +22,10 @@ export type ChartOptions = {
     MatCheckbox,
     MatIcon
   ],
-  templateUrl: './metric-chart.html',
-  styleUrl: './metric-chart.css'
+  templateUrl: './metric-chart.component.html',
+  styleUrl: './metric-chart.component.css'
 })
-export class MetricChart implements OnInit, OnDestroy {
+export class MetricChartComponent implements OnInit, OnDestroy {
 
   selectedMetrics: string[] = [];
   displayOnTwoYAxesOption: boolean = false;

@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
-import { HomePage } from './home-page/home-page';
+import { HomePageComponent } from './home-page/home-page.component';
 import { DataExplorer } from './data-explorer/data-explorer.component';
-import {MetricChart} from './metric-chart/metric-chart';
+import {MetricChartComponent} from './metric-chart/metric-chart.component';
 
 export const routes: Routes = [
   {
     path: 'HomePage',
-    component: HomePage
+    component: HomePageComponent
   },
   {
     path: '',
@@ -19,7 +19,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'MetricChart',
-        component: MetricChart
+        component: MetricChartComponent
       },
       {
         path: '',

@@ -1,60 +1,64 @@
 <div class="container">
-  @if (latestTest) {
+  @if (latestSpeedtestData) {
     <div class="children">
       <h1><strong>Latest Test</strong></h1>
       <h3><strong>{{ prettyTimestamp }}</strong></h3>
-      <h2>Executed on <a (click)="openDialog()">server #{{ latestTest.server.server_id }}</a></h2>
-      <ngx-slick-carousel class="carousel" [config]="carouselConfig">
-        @for (item of carouselItemList; track item.metric) {
-          <div ngxSlickItem class="slide">
-            <mat-card class="carousel-card">
-              <mat-card-header>
-                <mat-card-title>{{ item.metric }}</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                @if (item.measurementType === MeasurementType.BANDWIDTH_MEASUREMENT) {
-                  <h1>{{ makeBandwidthPretty(item.latest_value) }} Mb/s</h1>
-                  @if (item.differencePercentage > 0) {
-                    <span class="percentage-container">
+      <h2>Executed on <a (click)="openDialog()">server #{{ latestSpeedtestData.server.server_id }}</a></h2>
+        <ngx-slick-carousel #carousel class="carousel" [config]="carouselConfig">
+          @for (item of carouselItemList; track item.id) {
+            <div ngxSlickItem class="slide">
+              <mat-card class="carousel-card">
+                <mat-card-header>
+                  <mat-card-title>{{ item.metric }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  @if (item.measurementType === measurementType.BANDWIDTH_MEASUREMENT) {
+                    <h1>{{ makeBandwidthPretty(item.latest_value) }} Mb/s</h1>
+                    @if (item.differencePercentage > 0) {
+                      <span class="percentage-container">
                       <mat-icon class="goodStat">keyboard_arrow_up</mat-icon>
-                      <span><p class="goodStat">{{ makeMetricPretty(item.differencePercentage) }} % higher than average ({{makeBandwidthPretty(item.average_value)}} Mb/s)</p></span>
+                      <span><p class="goodStat">{{ makeMetricPretty(item.differencePercentage) }} % higher than average
+                        ({{ makeBandwidthPretty(item.average_value) }} Mb/s)</p></span>
                     </span>
-                  } @else if (item.differencePercentage === 0){
-                    <p>Right on average</p>
-                  } @else {
-                    <span class="percentage-container">
+                    } @else if (item.differencePercentage === 0) {
+                      <p>Right on average</p>
+                    } @else {
+                      <span class="percentage-container">
                       <mat-icon class="badStat">keyboard_arrow_down</mat-icon>
-                      <p class="badStat">{{ makeMetricPretty(item.differencePercentage) }} % lower than average ({{makeBandwidthPretty(item.average_value)}} Mb/s)</p>
+                      <p class="badStat">{{ makeMetricPretty(item.differencePercentage) }}
+                        % lower than average ({{ makeBandwidthPretty(item.average_value) }} Mb/s)</p>
                     </span>
-                  }
-                } @else if (item.measurementType === MeasurementType.PACKET_LOSS_PERCENTAGE) {
-                  <h1>{{ makeMetricPretty(item.latest_value) }} %</h1>
-                  @if (item.latest_value > 0) {
+                    }
+                  } @else if (item.measurementType === measurementType.PACKET_LOSS_PERCENTAGE) {
+                    <h1>{{ makeMetricPretty(item.latest_value) }} %</h1>
+                    @if (item.latest_value > 0) {
                       <p class="badStat">of packets were lost</p>
+                    } @else {
+                      <p class="goodStat">No packets were lost</p>
+                    }
                   } @else {
-                    <p class="goodStat">No packets were lost</p>
-                  }
-                } @else {
-                  <h1>{{ makeMetricPretty(item.latest_value) }} ms</h1>
-                  @if (item.differencePercentage < 0) {
-                    <span class="percentage-container">
+                    <h1>{{ makeMetricPretty(item.latest_value) }} ms</h1>
+                    @if (item.differencePercentage < 0) {
+                      <span class="percentage-container">
                       <mat-icon class="goodStat">keyboard_arrow_down</mat-icon>
-                      <p class="goodStat">{{ makeMetricPretty(item.differencePercentage) }} % lower than average ({{makeMetricPretty(item.average_value)}} ms)</p>
+                      <p class="goodStat">{{ makeMetricPretty(item.differencePercentage) }}
+                        % lower than average ({{ makeMetricPretty(item.average_value) }} ms)</p>
                     </span>
-                  } @else if (item.differencePercentage === 0){
-                    <p>Right on average</p>
-                  } @else {
-                    <span class="percentage-container">
+                    } @else if (item.differencePercentage === 0) {
+                      <p>Right on average</p>
+                    } @else {
+                      <span class="percentage-container">
                       <mat-icon class="badStat">keyboard_arrow_up</mat-icon>
-                      <p class="badStat">{{ makeMetricPretty(item.differencePercentage) }} % higher than average ({{makeMetricPretty(item.average_value)}} ms)</p>
+                      <p class="badStat">{{ makeMetricPretty(item.differencePercentage) }}
+                        % higher than average ({{ makeMetricPretty(item.average_value) }} ms)</p>
                     </span>
+                    }
                   }
-                }
-              </mat-card-content>
-            </mat-card>
-          </div>
-        }
-      </ngx-slick-carousel>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          }
+        </ngx-slick-carousel>
     </div>
   } @else {
     <p class="loading">Loading speedtest data...</p>

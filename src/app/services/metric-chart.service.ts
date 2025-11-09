@@ -7,11 +7,12 @@ import {AveragesInterface} from '../models/interfaces/averages.interface';
 import {environment} from '../../environments/environment';
 import {TimeWindowSettings} from '../models/classes/time-window';
 import {determineStartDateFromNow} from '../utils/start-date-calculator';
+import { handleError } from "./http-error-handler";
 
 @Injectable({
   providedIn: 'root'
 })
-export class SpeedtestService {
+export class MetricChartService {
 
   private apiBaseUrl = environment.apiBaseUrl;
 
@@ -22,14 +23,6 @@ export class SpeedtestService {
   timeWindowSettings$ = this.timeWindowSettingsSubject.asObservable();
 
   constructor(private httpClient: HttpClient) {}
-
-  getLatestTest(): Observable<SpeedtestInterface> {
-    return this.httpClient.get<SpeedtestInterface>(`${this.apiBaseUrl}/getLatestSpeedtestData`)
-      .pipe(
-        map(data => ({...data})),
-        catchError(this.handleError)
-      );
-  }
 
   setSelectedMetrics(selectedMetrics: string[]){
     this.selectedMetricsSubject.next(selectedMetrics);
@@ -47,7 +40,7 @@ export class SpeedtestService {
           }
         }
       ).pipe(
-        catchError(this.handleError)
+        catchError(handleError)
       );
 
     } else if (timeWindowSettings.startDate) {
@@ -59,7 +52,7 @@ export class SpeedtestService {
           }
         }
       ).pipe(
-        catchError(this.handleError)
+        catchError(handleError)
       );
 
     } else if (timeWindowSettings.dateRange) {
@@ -75,14 +68,14 @@ export class SpeedtestService {
           }
         }
       ).pipe(
-        catchError(this.handleError)
+        catchError(handleError)
       );
 
     } else {
       // Entire history was selected
       return this.httpClient.get<MetricPoint[]>(`${this.apiBaseUrl}/getAll/${metric}`)
         .pipe(
-          catchError(this.handleError)
+          catchError(handleError)
         );
     }
 
@@ -93,32 +86,10 @@ export class SpeedtestService {
     this.timeWindowSettingsSubject.next(new TimeWindowSettings());
   }
 
-  getMetricsAverages(): Observable<AveragesInterface> {
-    return this.httpClient.get<AveragesInterface>(`${this.apiBaseUrl}/getAverages`)
-      .pipe(
-        map(data => ({...data})),
-        catchError(this.handleError));
-  }
-
   setSelectedTimeWindow(timeWindowSettings: TimeWindowSettings | undefined){
     if (timeWindowSettings instanceof TimeWindowSettings) {
       this.timeWindowSettingsSubject.next(timeWindowSettings);
     }
-  }
-
-  /***************************************
-   Error handling for HttpClient.get()s
-   ****************************************/
-
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'An error occurred';
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = `Error: ${error.error.message}`;
-    } else {
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    console.error(errorMessage);
-    return throwError(() => new Error(errorMessage));
   }
 
 }

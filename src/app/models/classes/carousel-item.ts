@@ -1,18 +1,29 @@
 import {MeasurementType} from '../enums/measurement-type';
 
 export class CarouselItem {
+
+  private _id: number;
   private _metric: string;
   private _latest_value: number;
   private _average_value: number;
   private _measurementType: MeasurementType;
   private _differencePercentage: number = 0;
 
-  constructor(metric: string, value: number, average: number, type: MeasurementType) {
+  constructor(id: number, metric: string, value: number, average: number, type: MeasurementType) {
+    this._id = id;
     this._metric = metric;
     this._latest_value = value;
     this._average_value = average;
     this._measurementType = type;
     this._differencePercentage = this.computeDifferencePercentage();
+  }
+
+  get id(): number {
+    return this._id;
+  }
+
+  set id(value: number) {
+    this._id = value;
   }
 
   get metric(): string {

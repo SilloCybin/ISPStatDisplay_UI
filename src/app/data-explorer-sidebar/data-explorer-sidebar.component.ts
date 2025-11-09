@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {SpeedtestService} from '../services/speedtest.service';
+import {MetricChartService} from '../services/metric-chart.service';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton} from '@angular/material/button';
 import {isMetricDisabled} from '../utils/sidebar-metric-selection-algo';
@@ -57,7 +57,7 @@ export class DataExplorerSidebarComponent {
   selectedStartDateToNowStartDate: Date | null = null;
   selectedDateRange: FormGroup | null = null;
 
-  constructor(private speedTestService: SpeedtestService) {
+  constructor(private speedTestService: MetricChartService) {
     this.selectedNumberOfTimeUnitsSubject.pipe(debounceTime(1000)).subscribe((value) => {
       this.selectedNumberOfTimeUnits = value;
       this.onShowDataFromLastSelection();

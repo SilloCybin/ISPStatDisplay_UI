@@ -1,20 +1,23 @@
 import {Injectable, NgZone} from '@angular/core';
-import {Observable} from 'rxjs';
+import {catchError, map, Observable, throwError} from 'rxjs';
 import {AveragesInterface} from '../models/interfaces/averages.interface';
 import {environment} from '../../environments/environment';
 import {SpeedtestInterface} from '../models/interfaces/speedtest.interface';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {handleError} from './http-error-handler';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SpeedtestStreamService {
+export class HomePageService {
 
   private apiBaseUrl = environment.apiBaseUrl;
 
-  constructor(private zone: NgZone){}
+  constructor(private zone: NgZone, private httpClient: HttpClient){}
 
   private createSSE<T> (url: string, eventName: string): Observable<T>{
     return new Observable<T>(observer => {
+
       const source = new EventSource(url);
 
       source.addEventListener(eventName, (event: MessageEvent) => {
@@ -33,12 +36,29 @@ export class SpeedtestStreamService {
     })
   }
 
-  getAveragesStream(): Observable<AveragesInterface>{
+  getAverages(): Observable<AveragesInterface> {
+    return this.httpClient.get<AveragesInterface>(`${this.apiBaseUrl}/getAverages`)
+      .pipe(
+        map(data => ({...data})),
+        catchError(handleError));
+  }
+
+  getLatestSpeedtestData(): Observable<SpeedtestInterface> {
+    return this.httpClient.get<SpeedtestInterface>(`${this.apiBaseUrl}/getLatestSpeedtestData`)
+      .pipe(
+        map(data => ({...data})),
+        catchError(handleError)
+      );
+  }
+
+  streamAverages(): Observable<AveragesInterface>{
     return this.createSSE<AveragesInterface>(`${this.apiBaseUrl}/averagesStream`, 'averages-update');
   }
 
-  getSpeedtestDataStream(): Observable<SpeedtestInterface>{
+  streamSpeedtestData(): Observable<SpeedtestInterface>{
     return this.createSSE<SpeedtestInterface>(`${this.apiBaseUrl}/speedtestDataStream`, 'speedtest_data-update');
   }
+
+
 
 }

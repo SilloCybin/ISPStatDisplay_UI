@@ -1,10 +1,11 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {SpeedtestService} from '../services/speedtest.service';
+import {MetricChartService} from '../services/metric-chart.service';
 import {ApexAxisChartSeries, ApexChart, ApexTitleSubtitle, ApexXAxis, ApexYAxis, ChartComponent} from 'ng-apexcharts';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {TimeWindowSettings} from '../models/classes/time-window';
 import {combineLatest} from 'rxjs';
 import {MatIcon} from '@angular/material/icon';
+import {formatMetricName} from '../utils/metric-name-formatter';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -52,11 +53,11 @@ export class MetricChartComponent implements OnInit, OnDestroy {
     colors: this.colors
   };
 
-  constructor(private speedtestService: SpeedtestService) {}
+  constructor(private metricChartService: MetricChartService) {}
 
   ngOnInit() {
 
-    this.speedtestService.selectedMetric$.subscribe(metrics => {
+    this.metricChartService.selectedMetric$.subscribe(metrics => {
       this.selectedMetrics = metrics;
       if (this.selectedMetrics.length !== 2){
         this.displayOnTwoYAxesOption = false;
@@ -64,7 +65,7 @@ export class MetricChartComponent implements OnInit, OnDestroy {
       this.updateChart(this.selectedMetrics);
     });
 
-    this.speedtestService.timeWindowSettings$.subscribe(settings => {
+    this.metricChartService.timeWindowSettings$.subscribe(settings => {
       this.timeWindowSettings = settings;
       if (this.selectedMetrics.length) {
         this.updateChart(this.selectedMetrics)
@@ -85,7 +86,7 @@ export class MetricChartComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const observables = metrics.map(m => this.speedtestService.getMetricPoints(m, this.timeWindowSettings));
+    const observables = metrics.map(m => this.metricChartService.getMetricPoints(m, this.timeWindowSettings));
     combineLatest(observables).subscribe(results => {
 
       let yaxis: any[] = [];
@@ -94,7 +95,7 @@ export class MetricChartComponent implements OnInit, OnDestroy {
         yaxis = metrics.map((metric, i) => (
           {
           title: {
-            text: this.formatMetricName(metric),
+            text: formatMetricName(metric),
             style: {
               color: this.colors[i]
             }
@@ -104,7 +105,7 @@ export class MetricChartComponent implements OnInit, OnDestroy {
 
         this.chartOptions.series = results.map((data, i) => (
           {
-            name: this.formatMetricName(metrics[i]),
+            name: formatMetricName(metrics[i]),
             type: 'line',
             data: data.map(p => [new Date(p.timestamp).getTime(), p.value]),
             yaxis: i,
@@ -113,7 +114,7 @@ export class MetricChartComponent implements OnInit, OnDestroy {
       } else {
         this.chartOptions.series = results.map((data, i) => (
         {
-          name: this.formatMetricName(metrics[i]),
+          name: formatMetricName(metrics[i]),
           type: 'line',
           data: data.map(p => [new Date(p.timestamp).getTime(), p.value]),
         }));
@@ -121,7 +122,7 @@ export class MetricChartComponent implements OnInit, OnDestroy {
 
       this.chartOptions.yaxis = yaxis;
       this.chartOptions.xaxis = {type: 'datetime'};
-      this.chartOptions.title = {text: metrics.map(this.formatMetricName).join(' & ')};
+      this.chartOptions.title = {text: metrics.map(formatMetricName).join(' & ')};
 
       setTimeout(() => {
         this.chart?.updateOptions(this.chartOptions, true, true);
@@ -129,23 +130,9 @@ export class MetricChartComponent implements OnInit, OnDestroy {
     });
   }
 
-  formatMetricName(metric: string) {
-    if (metric.includes('Ping')) {
-      return metric.charAt(0).toUpperCase()
-        + metric.slice(1).replace(/([A-Z])/g, ' $1') + ' (ms)';
-    } else if (metric.includes('Bandwidth')) {
-      return metric.charAt(0).toUpperCase()
-        + metric.slice(1).replace(/([A-Z])/g, ' $1') + ' (Mb/s)';
-    } else if (metric == 'packetLoss') {
-      return metric.charAt(0).toUpperCase()
-        + metric.slice(1).replace(/([A-Z])/g, ' $1') + ' (%)';
-    }
-    return '';
-  }
-
   ngOnDestroy() {
     this.selectedMetrics = [];
-    this.speedtestService.clearSelection();
+    this.metricChartService.clearSelection();
   }
 
   onTwoYAxisDisplayCheckboxToggle(checked: boolean) {
@@ -153,5 +140,3 @@ export class MetricChartComponent implements OnInit, OnDestroy {
     this.updateChart(this.selectedMetrics);
   }
 }
-
-

@@ -51,13 +51,13 @@ export class DataExplorerSidebarComponent {
     {value: 'years-3', viewValueSingular: 'Year', viewValuePlural: 'Years'}
   ]
 
-  private selectedNumberOfTimeUnitsSubject = new Subject<number>();
+  private selectedNumberOfTimeUnitsSubject: Subject<number> = new Subject<number>();
   selectedNumberOfTimeUnits: number | null | undefined = null;
   selectedTimeUnit: string | null | undefined = null;
   selectedStartDateToNowStartDate: Date | null = null;
   selectedDateRange: FormGroup | null = null;
 
-  constructor(private speedTestService: MetricChartService) {
+  constructor(private metricChartService: MetricChartService) {
     this.selectedNumberOfTimeUnitsSubject.pipe(debounceTime(1000)).subscribe((value) => {
       this.selectedNumberOfTimeUnits = value;
       this.onShowDataFromLastSelection();
@@ -70,7 +70,7 @@ export class DataExplorerSidebarComponent {
     } else {
       this.selectedMetrics.push(selectedMetric);
     }
-    this.speedTestService.setSelectedMetrics(this.selectedMetrics);
+    this.metricChartService.setSelectedMetrics(this.selectedMetrics);
   }
 
   isMetricSelected(metric: string): boolean {
@@ -83,13 +83,13 @@ export class DataExplorerSidebarComponent {
 
   clearSidebarSelection() {
     this.selectedMetrics = [];
-    this.speedTestService.setSelectedMetrics(this.selectedMetrics);
+    this.metricChartService.setSelectedMetrics(this.selectedMetrics);
     this.selectedTimeWindow = null;
     this.selectedNumberOfTimeUnits = null;
     this.selectedTimeUnit = null;
     this.selectedStartDateToNowStartDate = null;
     this.selectedDateRange = null;
-    this.speedTestService.setSelectedTimeWindow(new TimeWindowSettings());
+    this.metricChartService.setSelectedTimeWindow(new TimeWindowSettings());
   }
 
   onTimeWindowSelection(event: MatRadioChange) {
@@ -127,7 +127,6 @@ export class DataExplorerSidebarComponent {
   }
 
   onShowDataFromLastSelection() {
-    const fromLastWindowSetting = new TimeWindowSettings();
     if (
       this.selectedTimeUnit
       && this.selectedNumberOfTimeUnits
@@ -135,10 +134,11 @@ export class DataExplorerSidebarComponent {
       && this.selectedNumberOfTimeUnits < 53
       && Number.isFinite(this.selectedNumberOfTimeUnits)
     ) {
+      const fromLastWindowSetting = new TimeWindowSettings();
       fromLastWindowSetting.isEntireHistory = false;
       fromLastWindowSetting.timeUnitNumber = this.selectedNumberOfTimeUnits;
       fromLastWindowSetting.timeUnit = this.selectedTimeUnit;
-      this.speedTestService.setSelectedTimeWindow(fromLastWindowSetting);
+      this.metricChartService.setSelectedTimeWindow(fromLastWindowSetting);
     }
   }
 
@@ -147,7 +147,7 @@ export class DataExplorerSidebarComponent {
     const startDateToNowWindowSetting = new TimeWindowSettings();
     startDateToNowWindowSetting.isEntireHistory = false;
     startDateToNowWindowSetting.startDate = date;
-    this.speedTestService.setSelectedTimeWindow(startDateToNowWindowSetting);
+    this.metricChartService.setSelectedTimeWindow(startDateToNowWindowSetting);
   }
 
   onDateRangeSelection(range: FormGroup) {
@@ -155,11 +155,11 @@ export class DataExplorerSidebarComponent {
     const startDateToEndDateWindowSetting = new TimeWindowSettings();
     startDateToEndDateWindowSetting.isEntireHistory = false;
     startDateToEndDateWindowSetting.dateRange = range;
-    this.speedTestService.setSelectedTimeWindow(startDateToEndDateWindowSetting);
+    this.metricChartService.setSelectedTimeWindow(startDateToEndDateWindowSetting);
   }
 
   setTimeWindowSelection(timeWindowSettings?: TimeWindowSettings) {
-    this.speedTestService.setSelectedTimeWindow(timeWindowSettings);
+    this.metricChartService.setSelectedTimeWindow(timeWindowSettings);
   }
 
 }

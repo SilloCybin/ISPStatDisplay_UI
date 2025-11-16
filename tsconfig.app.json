@@ -3,9 +3,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/app",
-    "skipLibCheck": true,
-    "types": ["swiper"]
+    "outDir": "./out-tsc/app"
   },
   "include": [
     "src/**/*.ts"

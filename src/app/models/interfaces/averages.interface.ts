@@ -1,6 +1,5 @@
 export interface AveragesInterface{
 
-  id: number;
   downloadBandwidth: number;
   uploadBandwidth: number;
   downloadPingLatency: number;

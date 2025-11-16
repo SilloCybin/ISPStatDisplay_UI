@@ -4,7 +4,6 @@ import {DownloadTestInterface} from './download-test.interface';
 import {ServerInterface} from './server.interface';
 
 export interface SpeedtestInterface {
-  id: number
   isp: string
   packetLoss: number
   timestamp: Date

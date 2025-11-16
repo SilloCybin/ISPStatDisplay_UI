@@ -67,14 +67,14 @@ export class HomePageComponent implements OnInit, OnDestroy {
   }
 
   loadUpdatedData(averages$: Observable<AveragesInterface>, speedtestData$: Observable<SpeedtestInterface>){
-    const combinedSub: Subscription = combineLatest([speedtestData$, averages$]).subscribe({
-      next: ([speedtest, averages]: [SpeedtestInterface, AveragesInterface]) => {
-        this.latestSpeedtestData = speedtest;
+    const combinedSub = combineLatest([speedtestData$, averages$]).subscribe({
+      next: ([speedtestData, averages]: [SpeedtestInterface, AveragesInterface]) => {
+        this.latestSpeedtestData = speedtestData;
         this.averages = averages;
-        this.timestamp = new Date(speedtest.timestamp);
+        this.timestamp = new Date(speedtestData.timestamp);
         this.prettyTimestamp = this.timestamp.toLocaleString();
 
-        this.carouselItemList = loadCarousel(speedtest, averages);
+        this.carouselItemList = loadCarousel(speedtestData, averages);
       },
       error: (error) => console.error('Error fetching data:', error.message)
     });
@@ -95,7 +95,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe())
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
 }

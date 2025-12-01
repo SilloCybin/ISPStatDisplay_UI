@@ -125,7 +125,7 @@
             } @else {
               <span class="percentage-container">
                 <mat-icon class="standard-deviation-below">info</mat-icon>
-                <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[1].standardDeviation_value) }} ms</strong>)</p>
+                <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeBandwidthPretty(homepageMetricList[1].standardDeviation_value) }} Mb/s</strong>)</p>
               </span>
             }
           </mat-card-content>

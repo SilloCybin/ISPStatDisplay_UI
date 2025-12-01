@@ -1,67 +1,649 @@
-<div class="container">
-  @if (latestSpeedtestData) {
-    <div class="children">
-      <h1><strong>Latest Test</strong></h1>
-      <h3><strong>{{ prettyTimestamp }}</strong></h3>
-      <h2>Executed on <a (click)="openDialog()">server #{{ latestSpeedtestData.server.server_id }}</a></h2>
-        <ngx-slick-carousel #carousel class="carousel" [config]="carouselConfig">
-          @for (item of carouselItemList; track item.id) {
-            <div ngxSlickItem class="slide">
-              <mat-card class="carousel-card">
-                <mat-card-header>
-                  <mat-card-title>{{ item.metric }}</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                  @if (item.measurementType === measurementType.BANDWIDTH_MEASUREMENT) {
-                    <h1>{{ makeBandwidthPretty(item.latest_value) }} Mb/s</h1>
-                    @if (item.differencePercentage > 0) {
-                      <span class="percentage-container">
-                      <mat-icon class="goodStat">keyboard_arrow_up</mat-icon>
-                      <span><p class="goodStat">{{ makeMetricPretty(item.differencePercentage) }} % higher than average
-                        ({{ makeBandwidthPretty(item.average_value) }} Mb/s)</p></span>
-                    </span>
-                    } @else if (item.differencePercentage === 0) {
-                      <p>Right on average</p>
-                    } @else {
-                      <span class="percentage-container">
-                      <mat-icon class="badStat">keyboard_arrow_down</mat-icon>
-                      <p class="badStat">{{ makeMetricPretty(item.differencePercentage) }}
-                        % lower than average ({{ makeBandwidthPretty(item.average_value) }} Mb/s)</p>
-                    </span>
-                    }
-                  } @else if (item.measurementType === measurementType.PACKET_LOSS_PERCENTAGE) {
-                    <h1>{{ makeMetricPretty(item.latest_value) }} %</h1>
-                    @if (item.latest_value > 0) {
-                      <p class="badStat">of packets were lost</p>
-                    } @else {
-                      <p class="goodStat">No packets were lost</p>
-                    }
-                  } @else {
-                    <h1>{{ makeMetricPretty(item.latest_value) }} ms</h1>
-                    @if (item.differencePercentage < 0) {
-                      <span class="percentage-container">
-                      <mat-icon class="goodStat">keyboard_arrow_down</mat-icon>
-                      <p class="goodStat">{{ makeMetricPretty(item.differencePercentage) }}
-                        % lower than average ({{ makeMetricPretty(item.average_value) }} ms)</p>
-                    </span>
-                    } @else if (item.differencePercentage === 0) {
-                      <p>Right on average</p>
-                    } @else {
-                      <span class="percentage-container">
-                      <mat-icon class="badStat">keyboard_arrow_up</mat-icon>
-                      <p class="badStat">{{ makeMetricPretty(item.differencePercentage) }}
-                        % higher than average ({{ makeMetricPretty(item.average_value) }} ms)</p>
-                    </span>
-                    }
-                  }
-                </mat-card-content>
-              </mat-card>
-            </div>
-          }
-        </ngx-slick-carousel>
+ @if (latestSpeedtestData && averages && standardDeviations) {
+   <div class="container">
+    <div class="homepage-title">
+      <h1 class="homepage-title-element"><strong>Latest Test</strong></h1>
+      <h3 class="homepage-title-element" style="font-style: italic">({{ prettyTimestamp }})</h3>
     </div>
+     <div class="homepage-title">
+     <h2 class="homepage-title-element">Executed on <a (click)="openDialog()">server
+       #{{ latestSpeedtestData.server.server_id }}</a></h2>
+     </div>
+    <br>
+    <br>
+    <br>
+
+    <div class="metric-family-container">
+      <div class="metric-cell">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title><strong>Download Bandwidth</strong></mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @if (homepageMetricList[0].differenceWithAveragePercentage > 0) {
+            <div class="value">
+              <h1 class="good-statistic-value">{{ makeBandwidthPretty(homepageMetricList[0].latest_value) }} Mb/s</h1>
+            </div>
+              <span class="percentage-container">
+                  <mat-icon class="good-statistic">arrow_upward</mat-icon>
+                  <span>
+                    <p class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[0].differenceWithAveragePercentage) }} %</strong>
+                      higher than average (<strong>{{ makeBandwidthPretty(homepageMetricList[0].average_value) }} Mb/s</strong>)</p>
+                  </span>
+                </span>
+            } @else if (homepageMetricList[0].differenceWithAveragePercentage === 0) {
+              <div class="value">
+                <h1>{{ makeBandwidthPretty(homepageMetricList[0].latest_value) }} Mb/s</h1>
+              </div>
+              <p class="good-statistic-value">Right on average</p>
+            } @else {
+              <div class="value">
+                <h1 class="bad-statistic-value">{{ makeBandwidthPretty(homepageMetricList[0].latest_value) }} Mb/s</h1>
+              </div>
+              <span class="percentage-container">
+                  <mat-icon class="bad-statistic">arrow_downward</mat-icon>
+                <p class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[0].differenceWithAveragePercentage) }} %</strong>
+                  lower than average (<strong>{{ makeBandwidthPretty(homepageMetricList[0].average_value) }} Mb/s</strong>)</p>
+                </span>
+            }
+            @if (homepageMetricList[0].distanceToStandardDeviationPercentage > 0) {
+              <span class="percentage-container">
+                <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[0].distanceToStandardDeviationPercentage) }} %</strong>
+                  higher than standard (<strong>{{ makeBandwidthPretty(homepageMetricList[0].standardDeviation_value) }} Mb/s</strong>)</p>
+              </span>
+            } @else {
+              <span class="percentage-container">
+                <mat-icon class="standard-deviation-below">info</mat-icon>
+                <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeBandwidthPretty(homepageMetricList[0].standardDeviation_value) }} Mb/s</strong>)</p>
+              </span>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="metric-cell">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title><strong>Packet Loss</strong></mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @if (latestSpeedtestData.packetLoss > 0) {
+              <div class="value">
+                <h1 class="bad-statistic-value">{{ makeMetricPretty(homepageMetricList[14].latest_value) }} %</h1>
+              </div>
+              <div class="packet-loss-percentage-container">
+                <p class="bad-statistic"><strong>of packets were lost</strong></p>
+              </div>
+            } @else {
+              <div class="value">
+                <h1 class="good-statistic-value">{{ makeMetricPretty(homepageMetricList[14].latest_value) }} %</h1>
+              </div>
+              <div class="packet-loss-percentage-container">
+                <p class="good-statistic"><strong>No packets were lost</strong></p>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="metric-cell">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title><strong>Upload Bandwidth</strong></mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @if (homepageMetricList[1].differenceWithAveragePercentage > 0) {
+              <div class="value">
+                <h1 class="good-statistic-value">{{ makeBandwidthPretty(homepageMetricList[1].latest_value) }} Mb/s</h1>
+              </div>
+              <span class="percentage-container">
+                  <mat-icon class="good-statistic">arrow_upward</mat-icon>
+                  <span>
+                    <p class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[1].differenceWithAveragePercentage) }} %</strong>
+                      higher than average (<strong>{{ makeBandwidthPretty(homepageMetricList[1].average_value) }} Mb/s</strong>)</p>
+                  </span>
+                </span>
+            } @else if (homepageMetricList[1].differenceWithAveragePercentage === 0) {
+              <div class="value">
+                <h1 class="good-statistic-value">{{ makeBandwidthPretty(homepageMetricList[1].latest_value) }} Mb/s</h1>
+              </div>
+              <p class="good-statistic">Right on average</p>
+            } @else {
+              <div class="value">
+                <h1 class="bad-statistic-value">{{ makeBandwidthPretty(homepageMetricList[1].latest_value) }} Mb/s</h1>
+              </div>
+              <span class="percentage-container">
+                <mat-icon class="bad-statistic">arrow_downward</mat-icon>
+                <p class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[1].differenceWithAveragePercentage) }} % </strong>
+                  lower than average (<strong>{{ makeBandwidthPretty(homepageMetricList[1].average_value) }} Mb/s</strong>)</p>
+              </span>
+            }
+            @if (homepageMetricList[1].distanceToStandardDeviationPercentage > 0) {
+              <span class="percentage-container">
+                <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[1].distanceToStandardDeviationPercentage) }} %</strong>
+                  higher than standard (<strong>{{ makeBandwidthPretty(homepageMetricList[1].standardDeviation_value) }} Mb/s</strong>)</p>
+              </span>
+            } @else {
+              <span class="percentage-container">
+                <mat-icon class="standard-deviation-below">info</mat-icon>
+                <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[1].standardDeviation_value) }} ms</strong>)</p>
+              </span>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+    <div class="metric-family-container">
+      <div class="metric-cell">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title><strong>Download Ping</strong></mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="ping-metric-container">
+              <div class="ping-metric-name-and-value-line">
+                <h3 class="ping-metric-name">Latency</h3>
+                @if (homepageMetricList[2].differenceWithAveragePercentage < 0){
+                  <h2 class="ping-metric-value-good">{{ makeMetricPretty(homepageMetricList[2].latest_value) }} ms</h2>
+                } @else {
+                  <h2 class="ping-metric-value-bad">{{ makeMetricPretty(homepageMetricList[2].latest_value) }} ms</h2>
+                }
+              </div>
+              <div class="average-and-deviation-info-container">
+                @if (homepageMetricList[2].differenceWithAveragePercentage < 0) {
+                  <span class="percentage-container">
+                    <mat-icon class="good-statistic">arrow_downward</mat-icon>
+                    <span>
+                      <p class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[2].differenceWithAveragePercentage) }} %</strong>
+                      lower than average (<strong>{{ makeMetricPretty(homepageMetricList[2].average_value) }} ms</strong>)</p>
+                    </span>
+                  </span>
+                } @else if (homepageMetricList[2].differenceWithAveragePercentage === 0) {
+                  <p class="good-statistic">Right on average</p>
+                } @else {
+                  <span class="percentage-container">
+                    <mat-icon class="bad-statistic">arrow_upward</mat-icon>
+                    <p class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[2].differenceWithAveragePercentage) }} %</strong>
+                    higher than average (<strong>{{ makeMetricPretty(homepageMetricList[2].average_value) }} ms</strong>)</p>
+                  </span>
+                }
+                @if (homepageMetricList[2].distanceToStandardDeviationPercentage > 0) {
+                  <span class="percentage-container">
+                    <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                    <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[2].distanceToStandardDeviationPercentage) }} %</strong>
+                      higher than standard (<strong>{{ makeMetricPretty(homepageMetricList[2].standardDeviation_value) }} ms</strong>)</p>
+                  </span>
+                } @else {
+                  <span class="percentage-container">
+                    <mat-icon class="standard-deviation-below">info</mat-icon>
+                    <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[2].standardDeviation_value) }} ms</strong>)</p>
+                  </span>
+                }
+              </div>
+            </div>
+            <div class="ping-metric-container">
+              <div class="ping-metric-name-and-value-line">
+                <h3 class="ping-metric-name">High</h3>
+                @if (homepageMetricList[5].differenceWithAveragePercentage < 0){
+                  <h2 class="ping-metric-value-good">{{ makeMetricPretty(homepageMetricList[5].latest_value) }} ms</h2>
+                } @else {
+                  <h2 class="ping-metric-value-bad">{{ makeMetricPretty(homepageMetricList[5].latest_value) }} ms</h2>
+                }
+              </div>
+              @if (homepageMetricList[5].differenceWithAveragePercentage < 0) {
+                <span class="percentage-container">
+                  <mat-icon class="good-statistic">arrow_downward</mat-icon>
+                  <span>
+                    <p class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[5].differenceWithAveragePercentage) }} %</strong>
+                      lower than average (<strong>{{ makeMetricPretty(homepageMetricList[5].average_value) }} ms</strong>)</p>
+                  </span>
+                </span>
+              } @else if (homepageMetricList[5].differenceWithAveragePercentage === 0) {
+                <p class="good-statistic">Right on average</p>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="bad-statistic">arrow_upward</mat-icon>
+                  <p class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[5].differenceWithAveragePercentage) }} %</strong>
+                    higher than average (<strong>{{ makeMetricPretty(homepageMetricList[5].average_value) }} ms</strong>)</p>
+                </span>
+              }
+              @if (homepageMetricList[5].distanceToStandardDeviationPercentage > 0) {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                  <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[5].distanceToStandardDeviationPercentage) }} %</strong>
+                    higher than standard (<strong>{{ makeMetricPretty(homepageMetricList[5].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-below">info</mat-icon>
+                  <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[5].standardDeviation_value) }}ms</strong>)</p>
+                </span>
+              }
+            </div>
+            <div class="ping-metric-container">
+              <div class="ping-metric-name-and-value-line">
+                <h3 class="ping-metric-name">Low</h3>
+                @if (homepageMetricList[8].differenceWithAveragePercentage < 0){
+                  <h2 class="ping-metric-value-good">{{ makeMetricPretty(homepageMetricList[8].latest_value) }} ms</h2>
+                } @else {
+                  <h2 class="ping-metric-value-bad">{{ makeMetricPretty(homepageMetricList[8].latest_value) }} ms</h2>
+                }
+              </div>
+              @if (homepageMetricList[8].differenceWithAveragePercentage < 0) {
+                <span class="percentage-container">
+                  <mat-icon class="good-statistic">arrow_downward</mat-icon>
+                  <span>
+                    <p
+                      class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[8].differenceWithAveragePercentage) }} %</strong>
+                      lower than average (<strong>{{ makeMetricPretty(homepageMetricList[8].average_value) }} ms</strong>)</p>
+                  </span>
+                </span>
+              } @else if (homepageMetricList[8].differenceWithAveragePercentage === 0) {
+                <p class="good-statistic">Right on average</p>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="bad-statistic">arrow_upward</mat-icon>
+                  <p
+                    class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[8].differenceWithAveragePercentage) }}
+                    %</strong>
+                    higher than average (<strong>{{ makeMetricPretty(homepageMetricList[8].average_value) }} ms</strong>)</p>
+                </span>
+              }
+              @if (homepageMetricList[8].distanceToStandardDeviationPercentage > 0) {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                  <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[8].distanceToStandardDeviationPercentage) }} %</strong>
+                    higher than standard (<strong>{{ makeMetricPretty(homepageMetricList[8].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-below">info</mat-icon>
+                  <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[8].standardDeviation_value) }}ms</strong>)</p>
+                </span>
+              }
+            </div>
+            <div class="ping-metric-container">
+              <div class="ping-metric-name-and-value-line">
+                <h3 class="ping-metric-name">Jitter</h3>
+                @if (homepageMetricList[11].differenceWithAveragePercentage < 0){
+                  <h2 class="ping-metric-value-good">{{ makeMetricPretty(homepageMetricList[11].latest_value) }} ms</h2>
+                } @else {
+                  <h2 class="ping-metric-value-bad">{{ makeMetricPretty(homepageMetricList[11].latest_value) }} ms</h2>
+                }
+              </div>
+              @if (homepageMetricList[11].differenceWithAveragePercentage < 0) {
+                <span class="percentage-container">
+                  <mat-icon class="good-statistic">arrow_downward</mat-icon>
+                  <span>
+                    <p
+                      class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[11].differenceWithAveragePercentage) }} %</strong>
+                      lower than average (<strong>{{ makeMetricPretty(homepageMetricList[11].average_value) }} ms</strong>)</p>
+                  </span>
+                </span>
+              } @else if (homepageMetricList[11].differenceWithAveragePercentage === 0) {
+                <p class="good-statistic">Right on average</p>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="bad-statistic">arrow_upward</mat-icon>
+                  <p
+                    class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[11].differenceWithAveragePercentage) }} %</strong>
+                    higher than average (<strong>{{ makeMetricPretty(homepageMetricList[11].average_value) }} ms</strong>)</p>
+                </span>
+              }
+              @if (homepageMetricList[11].distanceToStandardDeviationPercentage > 0) {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                  <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[11].distanceToStandardDeviationPercentage) }} %</strong>
+                    higher than standard (<strong>{{ makeMetricPretty(homepageMetricList[11].standardDeviation_value) }}ms</strong>)</p>
+                </span>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-below">info</mat-icon>
+                  <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[11].standardDeviation_value) }}ms</strong>)</p>
+                </span>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="metric-cell">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title><strong>Idle Ping</strong></mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="ping-metric-container">
+              <div class="ping-metric-name-and-value-line">
+                <h3 class="ping-metric-name">Latency</h3>
+                @if (homepageMetricList[4].differenceWithAveragePercentage < 0){
+                  <h2 class="ping-metric-value-good">{{ makeMetricPretty(homepageMetricList[4].latest_value) }} ms</h2>
+                } @else {
+                  <h2 class="ping-metric-value-bad">{{ makeMetricPretty(homepageMetricList[4].latest_value) }} ms</h2>
+                }
+              </div>
+              @if (homepageMetricList[4].differenceWithAveragePercentage < 0) {
+                <span class="percentage-container">
+                  <mat-icon class="good-statistic">arrow_downward</mat-icon>
+                  <span>
+                    <p class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[4].differenceWithAveragePercentage) }} %</strong>
+                      lower than average (<strong>{{ makeMetricPretty(homepageMetricList[4].average_value) }} ms</strong>)</p>
+                  </span>
+                </span>
+              } @else if (homepageMetricList[4].differenceWithAveragePercentage === 0) {
+                <p class="good-statistic">Right on average</p>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="bad-statistic">arrow_upward</mat-icon>
+                  <p class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[4].differenceWithAveragePercentage) }} %</strong>
+                    higher than average (<strong>{{ makeMetricPretty(homepageMetricList[4].average_value) }} ms</strong>)</p>
+                </span>
+              }
+              @if (homepageMetricList[4].distanceToStandardDeviationPercentage > 0) {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                  <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[4].distanceToStandardDeviationPercentage) }} %</strong>
+                    higher than standard (<strong>{{ makeMetricPretty(homepageMetricList[4].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-below">info</mat-icon>
+                  <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[4].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              }
+            </div>
+            <div class="ping-metric-container">
+              <div class="ping-metric-name-and-value-line">
+                <h3 class="ping-metric-name">High</h3>
+                @if (homepageMetricList[7].differenceWithAveragePercentage < 0){
+                  <h2 class="ping-metric-value-good">{{ makeMetricPretty(homepageMetricList[7].latest_value) }} ms</h2>
+                } @else {
+                  <h2 class="ping-metric-value-bad">{{ makeMetricPretty(homepageMetricList[7].latest_value) }} ms</h2>
+                }
+              </div>
+              @if (homepageMetricList[7].differenceWithAveragePercentage < 0) {
+                <span class="percentage-container">
+                  <mat-icon class="good-statistic">arrow_downward</mat-icon>
+                  <span>
+                    <p class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[7].differenceWithAveragePercentage) }} %</strong>
+                      lower than average (<strong>{{ makeMetricPretty(homepageMetricList[7].average_value) }} ms</strong>)</p>
+                  </span>
+                </span>
+              } @else if (homepageMetricList[7].differenceWithAveragePercentage === 0) {
+                <p class="good-statistic">Right on average</p>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="bad-statistic">arrow_upward</mat-icon>
+                  <p
+                    class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[7].differenceWithAveragePercentage) }} %</strong>
+                    higher than average (<strong>{{ makeMetricPretty(homepageMetricList[7].average_value) }} ms</strong>)</p>
+                </span>
+              }
+              @if (homepageMetricList[7].distanceToStandardDeviationPercentage > 0) {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                  <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[7].distanceToStandardDeviationPercentage) }} %</strong>
+                    higher than standard (<strong>{{ makeMetricPretty(homepageMetricList[7].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-below">info</mat-icon>
+                  <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[7].standardDeviation_value) }}ms</strong>)</p>
+                </span>
+              }
+            </div>
+            <div class="ping-metric-container">
+              <div class="ping-metric-name-and-value-line">
+                <h3 class="ping-metric-name">Low</h3>
+                @if (homepageMetricList[10].differenceWithAveragePercentage < 0){
+                  <h2 class="ping-metric-value-good">{{ makeMetricPretty(homepageMetricList[10].latest_value) }} ms</h2>
+                } @else {
+                  <h2 class="ping-metric-value-bad">{{ makeMetricPretty(homepageMetricList[10].latest_value) }} ms</h2>
+                }
+              </div>
+              @if (homepageMetricList[10].differenceWithAveragePercentage < 0) {
+                <span class="percentage-container">
+                  <mat-icon class="good-statistic">arrow_downward</mat-icon>
+                  <span>
+                    <p class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[10].differenceWithAveragePercentage) }} %</strong>
+                      lower than average (<strong>{{ makeMetricPretty(homepageMetricList[10].average_value) }} ms</strong>)</p>
+                  </span>
+                </span>
+              } @else if (homepageMetricList[10].differenceWithAveragePercentage === 0) {
+                <p class="good-statistic">Right on average</p>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="bad-statistic">arrow_upward</mat-icon>
+                  <p class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[10].differenceWithAveragePercentage) }} %</strong>
+                    higher than average (<strong>{{ makeMetricPretty(homepageMetricList[10].average_value) }} ms</strong>)</p>
+                </span>
+              }
+              @if (homepageMetricList[10].distanceToStandardDeviationPercentage > 0) {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                  <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[10].distanceToStandardDeviationPercentage) }} %</strong>
+                    higher than standard (<strong>{{ makeMetricPretty(homepageMetricList[10].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-below">info</mat-icon>
+                  <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[10].standardDeviation_value) }}ms</strong>)</p>
+                </span>
+              }
+            </div>
+            <div class="ping-metric-container">
+              <div class="ping-metric-name-and-value-line">
+                <h3 class="ping-metric-name">Jitter</h3>
+                @if (homepageMetricList[13].differenceWithAveragePercentage < 0){
+                  <h2 class="ping-metric-value-good">{{ makeMetricPretty(homepageMetricList[13].latest_value) }} ms</h2>
+                } @else {
+                  <h2 class="ping-metric-value-bad">{{ makeMetricPretty(homepageMetricList[13].latest_value) }} ms</h2>
+                }
+              </div>
+              @if (homepageMetricList[13].differenceWithAveragePercentage < 0) {
+                <span class="percentage-container">
+                  <mat-icon class="good-statistic">arrow_downward</mat-icon>
+                  <span>
+                    <p
+                      class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[13].differenceWithAveragePercentage) }} %</strong>
+                      lower than average (<strong>{{ makeMetricPretty(homepageMetricList[13].average_value) }} ms</strong>)</p>
+                  </span>
+                </span>
+              } @else if (homepageMetricList[13].differenceWithAveragePercentage === 0) {
+                <p class="good-statistic">Right on average</p>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="bad-statistic">arrow_upward</mat-icon>
+                  <p
+                    class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[13].differenceWithAveragePercentage) }} %</strong>
+                    higher than average (<strong>{{ makeMetricPretty(homepageMetricList[13].average_value) }} ms</strong>)</p>
+                </span>
+              }
+              @if (homepageMetricList[13].distanceToStandardDeviationPercentage > 0) {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                  <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[13].distanceToStandardDeviationPercentage) }} %</strong>
+                    higher than standard (<strong>{{ makeMetricPretty(homepageMetricList[13].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-below">info</mat-icon>
+                  <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[13].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="metric-cell">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title><strong>Upload Ping</strong></mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="ping-metric-container">
+              <div class="ping-metric-name-and-value-line">
+                <h3 class="ping-metric-name">Latency</h3>
+                @if (homepageMetricList[3].differenceWithAveragePercentage < 0){
+                  <h2 class="ping-metric-value-good">{{ makeMetricPretty(homepageMetricList[3].latest_value) }} ms</h2>
+                } @else {
+                  <h2 class="ping-metric-value-bad">{{ makeMetricPretty(homepageMetricList[3].latest_value) }} ms</h2>
+                }
+              </div>
+              @if (homepageMetricList[3].differenceWithAveragePercentage < 0) {
+                <span class="percentage-container">
+                  <mat-icon class="good-statistic">arrow_downward</mat-icon>
+                  <span>
+                    <p class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[3].differenceWithAveragePercentage) }} %</strong>
+                      lower than average (<strong>{{ makeMetricPretty(homepageMetricList[3].average_value) }} ms</strong>)</p>
+                  </span>
+                </span>
+              } @else if (homepageMetricList[3].differenceWithAveragePercentage === 0) {
+                <p class="good-statistic">Right on average</p>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="bad-statistic">arrow_upward</mat-icon>
+                  <p class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[3].differenceWithAveragePercentage) }} %</strong>
+                    higher than average (<strong>{{ makeMetricPretty(homepageMetricList[3].average_value) }} ms</strong>)</p>
+                </span>
+              }
+              @if (homepageMetricList[3].distanceToStandardDeviationPercentage > 0) {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                  <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[3].distanceToStandardDeviationPercentage) }} %</strong>
+                    higher than standard (<strong>{{ makeMetricPretty(homepageMetricList[3].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-below">info</mat-icon>
+                  <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[3].standardDeviation_value) }}ms</strong>)</p>
+                </span>
+              }
+            </div>
+            <div class="ping-metric-container">
+              <div class="ping-metric-name-and-value-line">
+                <h3 class="ping-metric-name">High</h3>
+                @if (homepageMetricList[6].differenceWithAveragePercentage < 0){
+                  <h2 class="ping-metric-value-good">{{ makeMetricPretty(homepageMetricList[6].latest_value) }} ms</h2>
+                } @else {
+                  <h2 class="ping-metric-value-bad">{{ makeMetricPretty(homepageMetricList[6].latest_value) }} ms</h2>
+                }
+              </div>
+              @if (homepageMetricList[6].differenceWithAveragePercentage < 0) {
+                <span class="percentage-container">
+                  <mat-icon class="good-statistic">arrow_downward</mat-icon>
+                  <span>
+                    <p class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[6].differenceWithAveragePercentage) }} %</strong>
+                      lower than average (<strong>{{ makeMetricPretty(homepageMetricList[6].average_value) }} ms</strong>)</p>
+                  </span>
+                </span>
+              } @else if (homepageMetricList[6].differenceWithAveragePercentage === 0) {
+                <p class="good-statistic">Right on average</p>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="bad-statistic">arrow_upward</mat-icon>
+                  <p class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[6].differenceWithAveragePercentage) }} %</strong>
+                    higher than average (<strong>{{ makeMetricPretty(homepageMetricList[6].average_value) }} ms</strong>)</p>
+                </span>
+              }
+              @if (homepageMetricList[6].distanceToStandardDeviationPercentage > 0) {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                  <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[6].distanceToStandardDeviationPercentage) }} %</strong>
+                    higher than standard (<strong>{{ makeMetricPretty(homepageMetricList[6].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-below">info</mat-icon>
+                  <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[6].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              }
+            </div>
+            <div class="ping-metric-container">
+              <div class="ping-metric-name-and-value-line">
+                <h3 class="ping-metric-name">Low</h3>
+                @if (homepageMetricList[9].differenceWithAveragePercentage < 0){
+                  <h2 class="ping-metric-value-good">{{ makeMetricPretty(homepageMetricList[9].latest_value) }} ms</h2>
+                } @else {
+                  <h2 class="ping-metric-value-bad">{{ makeMetricPretty(homepageMetricList[9].latest_value) }} ms</h2>
+                }
+              </div>
+              @if (homepageMetricList[9].differenceWithAveragePercentage < 0) {
+                <span class="percentage-container">
+                  <mat-icon class="good-statistic">arrow_downward</mat-icon>
+                  <span>
+                    <p class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[9].differenceWithAveragePercentage) }} %</strong>
+                      lower than average (<strong>{{ makeMetricPretty(homepageMetricList[9].average_value) }} ms</strong>)</p>
+                  </span>
+                </span>
+              } @else if (homepageMetricList[9].differenceWithAveragePercentage === 0) {
+                <p class="good-statistic">Right on average</p>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="bad-statistic">arrow_upward</mat-icon>
+                  <p class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[9].differenceWithAveragePercentage) }} %</strong>
+                    higher than average (<strong>{{ makeMetricPretty(homepageMetricList[9].average_value) }} ms</strong>)</p>
+                </span>
+              }
+              @if (homepageMetricList[9].distanceToStandardDeviationPercentage > 0) {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                  <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[9].distanceToStandardDeviationPercentage) }} %</strong>
+                    higher than standard (<strong>{{ makeMetricPretty(homepageMetricList[9].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-below">info</mat-icon>
+                  <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[9].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              }
+            </div>
+            <div class="ping-metric-container">
+              <div class="ping-metric-name-and-value-line">
+                <h3 class="ping-metric-name">Jitter</h3>
+                @if (homepageMetricList[12].differenceWithAveragePercentage < 0){
+                  <h2 class="ping-metric-value-good">{{ makeMetricPretty(homepageMetricList[12].latest_value) }} ms</h2>
+                } @else {
+                  <h2 class="ping-metric-value-bad">{{ makeMetricPretty(homepageMetricList[12].latest_value) }} ms</h2>
+                }
+              </div>
+              @if (homepageMetricList[12].differenceWithAveragePercentage < 0) {
+                <span class="percentage-container">
+                  <mat-icon class="good-statistic">arrow_downward</mat-icon>
+                  <span>
+                    <p class="good-statistic"><strong>{{ makeMetricPretty(homepageMetricList[12].differenceWithAveragePercentage) }} %</strong>
+                      lower than average (<strong>{{ makeMetricPretty(homepageMetricList[12].average_value) }} ms</strong>)</p>
+                  </span>
+                </span>
+              } @else if (homepageMetricList[12].differenceWithAveragePercentage === 0) {
+                <p class="good-statistic">Right on average</p>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="bad-statistic">arrow_upward</mat-icon>
+                  <p class="bad-statistic"><strong>{{ makeMetricPretty(homepageMetricList[12].differenceWithAveragePercentage) }} %</strong>
+                    higher than average (<strong>{{ makeMetricPretty(homepageMetricList[12].average_value) }} ms</strong>)</p>
+                </span>
+              }
+              @if (homepageMetricList[12].distanceToStandardDeviationPercentage > 0) {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-above">priority_high</mat-icon>
+                  <p class="standard-deviation-above">Deviation <strong>{{ makeMetricPretty(homepageMetricList[12].distanceToStandardDeviationPercentage) }} %</strong>
+                    higher than standard (<strong>{{ makeMetricPretty(homepageMetricList[12].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              } @else {
+                <span class="percentage-container">
+                  <mat-icon class="standard-deviation-below">info</mat-icon>
+                  <p class="standard-deviation-below">&nbsp;Deviation below standard (<strong>{{ makeMetricPretty(homepageMetricList[12].standardDeviation_value) }} ms</strong>)</p>
+                </span>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+   </div>
   } @else {
+   <div class="loading-container">
     <p class="loading">Loading speedtest data...</p>
+   </div>
   }
-</div>
+
 

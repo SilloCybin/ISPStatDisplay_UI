@@ -183,7 +183,7 @@ describe('HomePageComponent', () => {
     expect(component.averages).toEqual(averagesMock);
     expect(component.latestSpeedtestData).toEqual(speedtestDataMock);
     expect(component.timestamp).toEqual(new Date('2025-11-14T16:00:23Z'));
-    expect(component.carouselItemList.length).toBeGreaterThan(0);
+    expect(component.homepageMetricList.length).toBeGreaterThan(0);
   })
 
 
@@ -203,7 +203,7 @@ describe('HomePageComponent', () => {
     expect(component.averages).toEqual(averagesMockStream);
     expect(component.latestSpeedtestData).toEqual(speedtestDataMockStream);
     expect(component.timestamp).toEqual(new Date('2025-11-14T16:00:23Z'));
-    expect(component.carouselItemList.length).toBeGreaterThan(0);
+    expect(component.homepageMetricList.length).toBeGreaterThan(0);
   })
 
 

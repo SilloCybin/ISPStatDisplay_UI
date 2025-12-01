@@ -5,6 +5,7 @@ import {environment} from '../../environments/environment';
 import {SpeedtestInterface} from '../models/interfaces/speedtest.interface';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {handleError} from './http-error-handler';
+import {StandardDeviationsInterface} from '../models/interfaces/standard-deviations.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -51,6 +52,14 @@ export class HomePageService {
       );
   }
 
+  getStandardDeviations(): Observable<StandardDeviationsInterface> {
+    return this.httpClient.get<StandardDeviationsInterface>(`${this.apiBaseUrl}/getStandardDeviations`)
+      .pipe(
+        map(data => ({...data})),
+        catchError(handleError)
+      );
+  }
+
   streamAverages(): Observable<AveragesInterface>{
     return this.createSSE<AveragesInterface>(`${this.apiBaseUrl}/averagesStream`, 'averages-update');
   }
@@ -59,6 +68,8 @@ export class HomePageService {
     return this.createSSE<SpeedtestInterface>(`${this.apiBaseUrl}/speedtestDataStream`, 'speedtest_data-update');
   }
 
-
+  streamStandardDeviations(): Observable<StandardDeviationsInterface>{
+    return this.createSSE<StandardDeviationsInterface>(`${this.apiBaseUrl}/standardDeviationsStream`, 'standard_deviations-update');
+  }
 
 }

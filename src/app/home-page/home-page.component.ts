@@ -3,16 +3,16 @@ import {SpeedtestInterface} from '../models/interfaces/speedtest.interface';
 import {Observable, Subscription} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
-import {CarouselItem} from '../models/classes/carousel-item';
+import {HomepageMetricItem} from '../models/classes/homepage-metric-item';
 import {SlickCarouselModule} from 'ngx-slick-carousel';
 import {AveragesInterface} from '../models/interfaces/averages.interface';
 import {combineLatest} from 'rxjs';
-import {MeasurementType} from '../models/enums/measurement-type';
 import {MatIcon} from '@angular/material/icon';
 import {HomePageService} from '../services/home-page.service';
 import {ServerDetailsDialog} from './server-details-dialog/server-details-dialog';
 import {makeBandwidthPretty, makeMetricPretty} from '../utils/pretty-value-maker';
-import {loadCarousel} from '../utils/carousel-loader';
+import {loadHomepageMetricItems} from '../utils/homepage-metric-item-loader';
+import {StandardDeviationsInterface} from '../models/interfaces/standard-deviations.interface';
 
 @Component({
   selector: 'app-home-page',
@@ -22,7 +22,7 @@ import {loadCarousel} from '../utils/carousel-loader';
     MatCardContent,
     MatCardTitle,
     SlickCarouselModule,
-    MatIcon,
+    MatIcon
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css'
@@ -31,25 +31,15 @@ export class HomePageComponent implements OnInit, OnDestroy {
 
   latestSpeedtestData: SpeedtestInterface | null = null;
   averages: AveragesInterface | null = null;
+  standardDeviations: StandardDeviationsInterface | null = null;
   timestamp: Date | undefined;
   prettyTimestamp: string | undefined;
 
   subscriptions: Subscription[] = [];
 
-  carouselItemList: CarouselItem[] = [];
-  carouselConfig = {
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    dots: true,
-    arrows: false,
-    infinite: true,
-    pauseOnHover: true
-  };
+  homepageMetricList: HomepageMetricItem[] = [];
 
   readonly dialog: MatDialog = inject(MatDialog);
-  protected readonly measurementType = MeasurementType;
   protected readonly makeBandwidthPretty = makeBandwidthPretty;
   protected readonly makeMetricPretty = makeMetricPretty;
 
@@ -58,23 +48,29 @@ export class HomePageComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const speedtest$: Observable<SpeedtestInterface> = this.homePageService.getLatestSpeedtestData();
     const averages$: Observable<AveragesInterface> = this.homePageService.getAverages();
+    const standardDeviations$: Observable<StandardDeviationsInterface> = this.homePageService.getStandardDeviations();
 
     const averagesStream$: Observable<AveragesInterface> = this.homePageService.streamAverages();
     const speedtestDataStream$: Observable<SpeedtestInterface> = this.homePageService.streamSpeedtestData();
+    const standardDeviationStream$: Observable<StandardDeviationsInterface> = this.homePageService.streamStandardDeviations();
 
-    this.loadUpdatedData(averages$, speedtest$);
-    this.loadUpdatedData(averagesStream$, speedtestDataStream$);
+    this.loadUpdatedData(averages$, speedtest$, standardDeviations$);
+    this.loadUpdatedData(averagesStream$, speedtestDataStream$, standardDeviationStream$);
   }
 
-  loadUpdatedData(averages$: Observable<AveragesInterface>, speedtestData$: Observable<SpeedtestInterface>){
-    const combinedSub = combineLatest([speedtestData$, averages$]).subscribe({
-      next: ([speedtestData, averages]: [SpeedtestInterface, AveragesInterface]) => {
+  loadUpdatedData(averages$: Observable<AveragesInterface>,
+                  speedtestData$: Observable<SpeedtestInterface>,
+                  standardDeviations$: Observable<StandardDeviationsInterface>){
+
+    const combinedSub = combineLatest([speedtestData$, averages$, standardDeviations$]).subscribe({
+      next: ([speedtestData, averages, standardDeviations]) => {
         this.latestSpeedtestData = speedtestData;
         this.averages = averages;
+        this.standardDeviations = standardDeviations;
         this.timestamp = new Date(speedtestData.timestamp);
         this.prettyTimestamp = this.timestamp.toLocaleString();
 
-        this.carouselItemList = loadCarousel(speedtestData, averages);
+        this.homepageMetricList = loadHomepageMetricItems(speedtestData, averages, standardDeviations);
       },
       error: (error) => console.error('Error fetching data:', error.message)
     });

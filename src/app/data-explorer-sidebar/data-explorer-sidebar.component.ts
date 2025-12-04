@@ -76,6 +76,7 @@ export class DataExplorerSidebarComponent implements OnInit, OnDestroy{
       this.selectedMetrics.push(selectedMetric);
     }
     this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'polynomialRegression').filter(item => item !== 'exponentialSmoothing');
+    this.metricChartService.resetTrendlines();
     this.metricChartService.setSelectedMetrics(this.selectedMetrics);
   }
 

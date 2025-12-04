@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, catchError, Observable} from 'rxjs';
+import {BehaviorSubject, catchError, Observable, Subject} from 'rxjs';
 import {Coordinate} from '../models/classes/coordinate';
 import {environment} from '../../environments/environment';
 import {TimeWindowSettings} from '../models/classes/time-window';
@@ -21,11 +21,10 @@ export class CoordinatesService {
   private timeWindowSettingsSubject: BehaviorSubject<TimeWindowSettings> = new BehaviorSubject<TimeWindowSettings>(new TimeWindowSettings());
   timeWindowSettings$: Observable<TimeWindowSettings> = this.timeWindowSettingsSubject.asObservable();
 
-  constructor(private httpClient: HttpClient) {}
+  private resetTrendlinesSubject: Subject<void> = new Subject<void>();
+  resetTrendlines$: Observable<void> = this.resetTrendlinesSubject.asObservable();
 
-  setSelectedMetrics(selectedMetrics: string[]){
-    this.selectedMetricsSubject.next(selectedMetrics);
-  }
+  constructor(private httpClient: HttpClient) {}
 
 
   getCoordinates(metric: string, timeWindowSettings: TimeWindowSettings, trendline?: string, parameter?: number): Observable<Coordinate[]> {
@@ -174,6 +173,9 @@ export class CoordinatesService {
     return new Observable<Coordinate[]>();
   }
 
+  setSelectedMetrics(selectedMetrics: string[]){
+    this.selectedMetricsSubject.next(selectedMetrics);
+  }
 
   setSelectedTimeWindow(timeWindowSettings: TimeWindowSettings | undefined){
     if (timeWindowSettings instanceof TimeWindowSettings) {
@@ -186,4 +188,7 @@ export class CoordinatesService {
     this.timeWindowSettingsSubject.next(new TimeWindowSettings());
   }
 
+  resetTrendlines() {
+    this.resetTrendlinesSubject.next();
+  }
 }

@@ -49,7 +49,7 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
   private alphaParameterSubject: Subject<number> = new Subject<number>();
 
   alphaParameter: number | null | undefined = null;
-  polynomialDegreeParameter: number | null = null;
+  polynomialDegreeParameter: number | null | undefined = null;
 
   @ViewChild("chart") chart: ChartComponent | undefined;
   chartOptions: ChartOptions = chartOptions;
@@ -57,26 +57,20 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
   colors: string[] = colors;
   degrees: PolynomialDegree[] = polynomialDegrees;
 
-  constructor(private metricChartService: CoordinatesService) {}
+  constructor(private metricChartService: CoordinatesService) {
+  }
 
   ngOnInit() {
-    this.metricChartService.selectedMetric$.pipe(takeUntil(this.destroySubject)).subscribe(metrics => {
+    this.metricChartService.selectedMetric$.pipe(takeUntil(this.destroySubject)).subscribe((metrics) => {
       this.selectedMetrics = metrics;
-      if (this.selectedMetrics.length !== 2){
-        this.displayOnTwoYAxesOption = false;
-      }
-      if (this.selectedMetrics.length == 1
-        || (this.selectedMetrics.length > 2 && (!this.selectedMetrics.includes('polynomialRegression') || (!this.selectedMetrics.includes('exponentialSmoothing'))))
-      ){
-        this.uncheckTrendlineCheckboxes();
-      }
-      this.updateChart(this.selectedMetrics);
+      this.sortCheckboxesOut();
+      this.updateChart();
     });
 
-    this.metricChartService.timeWindowSettings$.pipe(takeUntil(this.destroySubject)).subscribe(settings => {
+    this.metricChartService.timeWindowSettings$.pipe(takeUntil(this.destroySubject)).subscribe((settings) => {
       this.timeWindowSettings = settings;
       if (this.selectedMetrics.length) {
-        this.updateChart(this.selectedMetrics)
+        this.updateChart();
       }
     });
 
@@ -84,11 +78,16 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
       this.alphaParameter = value;
       this.getExponentialSmoothingTrendline();
     });
+
+    this.metricChartService.resetTrendlines$.pipe(takeUntil(this.destroySubject)).subscribe(() => {
+      this.unCheckTrendlineCheckboxes()
+    })
+
   }
 
-  updateChart(metrics: string[]) {
+  updateChart() {
 
-    if (!metrics.length || this.timeWindowSettings.isTimeWindowEmpty()) {
+    if (!this.selectedMetrics.length || this.timeWindowSettings.isTimeWindowEmpty()) {
       // Clear chart
       this.chartOptions.series = [];
       this.chartOptions.xaxis = {categories: []};
@@ -100,11 +99,11 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const seriesObservables: Observable<Coordinate[]>[] = metrics.map(metric => {
-      if (metric === 'polynomialRegression' && this.polynomialDegreeParameter !== null){
-        return this.metricChartService.getCoordinates(metrics[0], this.timeWindowSettings, metric, this.polynomialDegreeParameter);
+    const seriesObservables: Observable<Coordinate[]>[] = this.selectedMetrics.map(metric => {
+      if (metric === 'polynomialRegression' && this.polynomialDegreeParameter !== null) {
+        return this.metricChartService.getCoordinates(this.selectedMetrics[0], this.timeWindowSettings, metric, this.polynomialDegreeParameter);
       } else if (metric === 'exponentialSmoothing' && this.alphaParameter !== null) {
-        return this.metricChartService.getCoordinates(metrics[0], this.timeWindowSettings, metric, this.alphaParameter);
+        return this.metricChartService.getCoordinates(this.selectedMetrics[0], this.timeWindowSettings, metric, this.alphaParameter);
       } else {
         return this.metricChartService.getCoordinates(metric, this.timeWindowSettings);
       }
@@ -115,20 +114,20 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
       let yaxis: any[] = [];
 
       if (this.displayOnTwoYAxesOption) {
-        yaxis = metrics.map((metric, i) => (
+        yaxis = this.selectedMetrics.map((metric, i) => (
           {
-          title: {
-            text: formatMetricName(metric),
-            style: {
-              color: this.colors[i]
-            }
-          },
-          opposite: (i === 1)
-        }));
+            title: {
+              text: formatMetricName(metric),
+              style: {
+                color: this.colors[i]
+              }
+            },
+            opposite: (i === 1)
+          }));
 
         this.chartOptions.series = series.map((data, i) => (
           {
-            name: formatMetricName(metrics[i]),
+            name: formatMetricName(this.selectedMetrics[i]),
             type: 'line',
             data: data.map(p => [new Date(p.timestamp).getTime(), p.value]),
             yaxis: i,
@@ -136,16 +135,16 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
           }));
       } else {
         this.chartOptions.series = series.map((data, i) => (
-        {
-          name: formatMetricName(metrics[i]),
-          type: 'line',
-          data: data.map(p => [new Date(p.timestamp).getTime(), p.value]),
-        }));
+          {
+            name: formatMetricName(this.selectedMetrics[i]),
+            type: 'line',
+            data: data.map(p => [new Date(p.timestamp).getTime(), p.value]),
+          }));
       }
 
       this.chartOptions.yaxis = yaxis;
       this.chartOptions.xaxis = {type: 'datetime'};
-      this.chartOptions.title = {text: metrics.map(formatMetricName).join(' & ')};
+      this.chartOptions.title = {text: this.selectedMetrics.map(formatMetricName).join(' & ')};
 
       setTimeout(() => {
         this.chart?.updateOptions(this.chartOptions, true, true);
@@ -153,18 +152,18 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
     });
   }
 
-  onPolynomialRegressionCurveCheckboxToggle(checked: boolean){
+  onPolynomialRegressionCurveCheckboxToggle(checked: boolean) {
     this.displayPolynomialRegressionTrendline = checked;
-    if (!checked && this.selectedMetrics.includes('polynomialRegression') && this.polynomialDegreeParameter){
+    if (!checked && this.selectedMetrics.includes('polynomialRegression')) {
       this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'polynomialRegression');
       this.polynomialDegreeParameter = null;
       this.metricChartService.setSelectedMetrics(this.selectedMetrics);
     }
   }
 
-  onExponentialSmoothingCurveCheckboxToggle(checked: boolean){
+  onExponentialSmoothingCurveCheckboxToggle(checked: boolean) {
     this.displayExponentialSmoothingTrendline = checked;
-    if (!checked && this.selectedMetrics.includes('exponentialSmoothing') && this.alphaParameter){
+    if (!checked && this.selectedMetrics.includes('exponentialSmoothing')) {
       this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'exponentialSmoothing');
       this.alphaParameter = null;
       this.metricChartService.setSelectedMetrics(this.selectedMetrics);
@@ -173,7 +172,7 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
 
   getPolynomialRegressionTrendline() {
     if (this.displayPolynomialRegressionTrendline) {
-      if (this.selectedMetrics.includes('polynomialRegression')){
+      if (this.selectedMetrics.includes('polynomialRegression')) {
         this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'polynomialRegression');
       }
       this.selectedMetrics.push('polynomialRegression');
@@ -183,7 +182,7 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
 
   getExponentialSmoothingTrendline() {
     if (this.displayExponentialSmoothingTrendline) {
-      if (this.selectedMetrics.includes('exponentialSmoothing')){
+      if (this.selectedMetrics.includes('exponentialSmoothing')) {
         this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'exponentialSmoothing');
       }
       this.selectedMetrics.push('exponentialSmoothing');
@@ -192,21 +191,27 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
   }
 
   onAlphaParameterInputChange(value: number, control: NgModel) {
-    if (control.valid && value <= 1 && value >= 0 && value !== null){
+    if (control.valid && value <= 1 && value >= 0 && value !== null) {
       this.alphaParameterSubject.next(value);
     }
   }
 
   onTwoYAxisDisplayCheckboxToggle(checked: boolean) {
     this.displayOnTwoYAxesOption = checked;
-    this.updateChart(this.selectedMetrics);
+    this.updateChart();
   }
 
-  uncheckTrendlineCheckboxes(){
+  unCheckTrendlineCheckboxes() {
     this.displayPolynomialRegressionTrendline = false;
     this.polynomialDegreeParameter = null;
     this.displayExponentialSmoothingTrendline = false;
     this.alphaParameter = null;
+  }
+
+  sortCheckboxesOut() {
+    if (this.selectedMetrics.length !== 2) {
+      this.displayOnTwoYAxesOption = false;
+    }
   }
 
   ngOnDestroy() {

@@ -44,7 +44,7 @@ describe('MetricChartComponent', () => {
     component.timeWindowSettings = new TimeWindowSettings();
     service.setSelectedMetrics(['downloadBandwidth']);
 
-    expect(component.updateChart).toHaveBeenCalledWith(['downloadBandwidth']);
+    expect(component.updateChart).toHaveBeenCalled();
   })
 
 
@@ -55,7 +55,7 @@ describe('MetricChartComponent', () => {
     component.selectedMetrics = ['downloadBandwidth'];
     service.setSelectedTimeWindow(new TimeWindowSettings());
 
-    expect(component.updateChart).toHaveBeenCalledWith(['downloadBandwidth']);
+    expect(component.updateChart).toHaveBeenCalled();
   })
 
 
@@ -76,7 +76,7 @@ describe('MetricChartComponent', () => {
     component.timeWindowSettings = new TimeWindowSettings();
     service.setSelectedMetrics(['downloadBandwidth']);
 
-    expect(component.updateChart).toHaveBeenCalledWith(['downloadBandwidth']);
+    expect(component.updateChart).toHaveBeenCalled();
     expect(component.chartOptions.series).toEqual([]);
     expect(component.chartOptions.xaxis.categories).toEqual([]);
     expect(component.chartOptions.yaxis).toEqual([]);

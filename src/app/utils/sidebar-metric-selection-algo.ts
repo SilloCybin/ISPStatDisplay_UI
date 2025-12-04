@@ -1,4 +1,10 @@
+
 export function isMetricDisabled(metric: string, selectedMetrics: string[], isSelected: boolean): boolean | undefined {
+
+    selectedMetrics = selectedMetrics
+      .filter(item => item !== 'polynomialRegression')
+      .filter(item => item !== 'exponentialSmoothing');
+
   if (selectedMetrics.length < 2) {
     return false;
   } else if (selectedMetrics.length === 2) {
@@ -69,11 +75,7 @@ export function isMetricDisabled(metric: string, selectedMetrics: string[], isSe
     } else {
       return false;
     }
-  } else if (isSelected) {
-    return false;
-  } else {
-    return true;
-  }
+  } else return !isSelected;
 
 
 }

@@ -1,6 +1,6 @@
 import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {SpeedtestInterface} from '../models/interfaces/speedtest.interface';
-import {Observable, Subscription} from 'rxjs';
+import {Observable, Subject, Subscription, takeUntil} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
 import {HomepageMetricItem} from '../models/classes/homepage-metric-item';
@@ -36,6 +36,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
   prettyTimestamp: string | undefined;
 
   subscriptions: Subscription[] = [];
+  destroySubject: Subject<void> = new Subject<void>();
 
   homepageMetricList: HomepageMetricItem[] = [];
 
@@ -46,13 +47,13 @@ export class HomePageComponent implements OnInit, OnDestroy {
   constructor(private homePageService: HomePageService) {}
 
   ngOnInit() {
-    const speedtest$: Observable<SpeedtestInterface> = this.homePageService.getLatestSpeedtestData();
-    const averages$: Observable<AveragesInterface> = this.homePageService.getAverages();
-    const standardDeviations$: Observable<StandardDeviationsInterface> = this.homePageService.getStandardDeviations();
+    const speedtest$: Observable<SpeedtestInterface> = this.homePageService.getLatestSpeedtestData().pipe(takeUntil(this.destroySubject));
+    const averages$: Observable<AveragesInterface> = this.homePageService.getAverages().pipe(takeUntil(this.destroySubject));
+    const standardDeviations$: Observable<StandardDeviationsInterface> = this.homePageService.getStandardDeviations().pipe(takeUntil(this.destroySubject));
 
-    const averagesStream$: Observable<AveragesInterface> = this.homePageService.streamAverages();
-    const speedtestDataStream$: Observable<SpeedtestInterface> = this.homePageService.streamSpeedtestData();
-    const standardDeviationStream$: Observable<StandardDeviationsInterface> = this.homePageService.streamStandardDeviations();
+    const averagesStream$: Observable<AveragesInterface> = this.homePageService.streamAverages().pipe(takeUntil(this.destroySubject));
+    const speedtestDataStream$: Observable<SpeedtestInterface> = this.homePageService.streamSpeedtestData().pipe(takeUntil(this.destroySubject));
+    const standardDeviationStream$: Observable<StandardDeviationsInterface> = this.homePageService.streamStandardDeviations().pipe(takeUntil(this.destroySubject));
 
     this.loadUpdatedData(averages$, speedtest$, standardDeviations$);
     this.loadUpdatedData(averagesStream$, speedtestDataStream$, standardDeviationStream$);
@@ -92,6 +93,8 @@ export class HomePageComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.destroySubject.next();
+    this.destroySubject.complete();
   }
 
 }

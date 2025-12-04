@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {MetricChartService} from '../services/metric-chart.service';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {CoordinatesService} from '../services/coordinates.service';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton} from '@angular/material/button';
 import {isMetricDisabled} from '../utils/sidebar-metric-selection-algo';
@@ -12,8 +12,9 @@ import {MatNativeDateModule, provideNativeDateAdapter} from '@angular/material/c
 import {DatepickerToggleWrapperModule} from './single-date-calendar/single-date-calendar-wrapper';
 import {DoubleDatepickerToggleWrapperModule} from './double-date-calendar/double-date-calendar-wrapper';
 import {TimeWindowSettings} from '../models/classes/time-window';
-import {debounceTime, Subject} from 'rxjs';
+import {debounceTime, Subject, takeUntil} from 'rxjs';
 import {TimeUnit} from '../models/interfaces/time-unit.interface';
+import {timeUnits} from '../constants/timeUnits';
 
 @Component({
   selector: 'app-data-explorer-sidebar',
@@ -39,17 +40,12 @@ import {TimeUnit} from '../models/interfaces/time-unit.interface';
   templateUrl: './data-explorer-sidebar.component.html',
   styleUrl: './data-explorer-sidebar.component.css'
 })
-export class DataExplorerSidebarComponent {
+export class DataExplorerSidebarComponent implements OnInit, OnDestroy{
 
   selectedMetrics: string[] = [];
   selectedTimeWindow: string | null = null;
 
-  timeUnits: TimeUnit[] = [
-    {value: 'days-0', viewValueSingular: 'Day', viewValuePlural: 'Days'},
-    {value: 'weeks-1', viewValueSingular: 'Week', viewValuePlural: 'Weeks'},
-    {value: 'months-2', viewValueSingular: 'Month', viewValuePlural: 'Months'},
-    {value: 'years-3', viewValueSingular: 'Year', viewValuePlural: 'Years'}
-  ]
+  timeUnits: TimeUnit[] = timeUnits;
 
   private selectedNumberOfTimeUnitsSubject: Subject<number> = new Subject<number>();
   selectedNumberOfTimeUnits: number | null | undefined = null;
@@ -57,11 +53,20 @@ export class DataExplorerSidebarComponent {
   selectedStartDateToNowStartDate: Date | null = null;
   selectedDateRange: FormGroup | null = null;
 
-  constructor(private metricChartService: MetricChartService) {
+  private destroySubject: Subject<void> = new Subject<void>();
+
+  constructor(private metricChartService: CoordinatesService){}
+
+  ngOnInit() {
+
+    this.metricChartService.selectedMetric$.pipe(takeUntil(this.destroySubject)).subscribe(metrics => {
+      this.selectedMetrics = metrics;
+    });
+
     this.selectedNumberOfTimeUnitsSubject.pipe(debounceTime(1000)).subscribe((value) => {
       this.selectedNumberOfTimeUnits = value;
       this.onShowDataFromLastSelection();
-    })
+    });
   }
 
   onMetricSelection(selectedMetric: string) {
@@ -70,6 +75,7 @@ export class DataExplorerSidebarComponent {
     } else {
       this.selectedMetrics.push(selectedMetric);
     }
+    this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'polynomialRegression').filter(item => item !== 'exponentialSmoothing');
     this.metricChartService.setSelectedMetrics(this.selectedMetrics);
   }
 
@@ -160,6 +166,11 @@ export class DataExplorerSidebarComponent {
 
   setTimeWindowSelection(timeWindowSettings?: TimeWindowSettings) {
     this.metricChartService.setSelectedTimeWindow(timeWindowSettings);
+  }
+
+  ngOnDestroy(): void {
+    this.destroySubject.next();
+    this.destroySubject.complete()
   }
 
 }

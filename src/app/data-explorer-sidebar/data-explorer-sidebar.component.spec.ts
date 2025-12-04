@@ -4,7 +4,7 @@ import {DataExplorerSidebarComponent} from './data-explorer-sidebar.component';
 import {HomePageService} from '../services/home-page.service';
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {MetricChartService} from '../services/metric-chart.service';
+import {CoordinatesService} from '../services/coordinates.service';
 import {TimeWindowSettings} from '../models/classes/time-window';
 import {MatRadioChange} from '@angular/material/radio';
 import {FormControl, FormGroup} from '@angular/forms';
@@ -12,7 +12,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 describe('DataExplorerSidebarComponent', () => {
   let component: DataExplorerSidebarComponent;
   let fixture: ComponentFixture<DataExplorerSidebarComponent>;
-  let service: MetricChartService;
+  let service: CoordinatesService;
   let httpMock: HttpTestingController;
 
   const selectedMetricsMock1 = ['downloadBandwidth', 'packetLoss'];
@@ -28,7 +28,7 @@ describe('DataExplorerSidebarComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DataExplorerSidebarComponent],
       providers: [
-        MetricChartService,
+        CoordinatesService,
         provideHttpClient(),
         provideHttpClientTesting()
       ]
@@ -39,7 +39,7 @@ describe('DataExplorerSidebarComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    service = TestBed.inject(MetricChartService);
+    service = TestBed.inject(CoordinatesService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 

@@ -1,24 +1,15 @@
 .data-explorer-layout {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 4 equal columns */
-  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: calc(100% - 49px);
 }
 
-.sidebar {
-  height: 100%;
-  grid-column: span 1;   /* take 1 column */
-  background-color: #ccc;
+.chart-parameter-selector {
+  background-color: #eaeaea;
 }
 
-.content {
-  height: 100%;
-  grid-column: span 4;   /* take 3 columns */
+.chart-container {
   background-color: #eee;
-}
-
-.icon-right {
-  display: inline-flex;
-  flex-direction: row-reverse;
-  align-items: center;
-  gap: 0.25rem; /* optional spacing */
+  flex: 1;
 }

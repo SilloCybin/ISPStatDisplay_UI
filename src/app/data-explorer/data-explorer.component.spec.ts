@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DataExplorer } from './data-explorer.component';
-import {MetricChartService} from '../services/metric-chart.service';
+import {CoordinatesService} from '../services/coordinates.service';
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {HomePageService} from '../services/home-page.service';
@@ -16,7 +16,7 @@ describe('DataExplorer', () => {
     await TestBed.configureTestingModule({
       imports: [DataExplorer],
       providers: [
-        MetricChartService,
+        CoordinatesService,
         provideHttpClient(),
         provideHttpClientTesting()
       ]

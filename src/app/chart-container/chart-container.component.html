@@ -1,0 +1,86 @@
+@if (chartOptions.series.length) {
+  <div class="options-and-chart-container">
+    @if (selectedMetrics.length < 3
+    || (selectedMetrics.length < 4 && (selectedMetrics.includes('polynomialRegression') || selectedMetrics.includes('exponentialSmoothing')))) {
+    <div class="other-options-parameter-section">
+      @if (selectedMetrics.length == 1
+      || (selectedMetrics.length < 4 && (selectedMetrics.includes('polynomialRegression') || selectedMetrics.includes('exponentialSmoothing')))) {
+        <div class="title-section-container">
+          <h1>Display trendlines</h1>
+        </div>
+        <section class="checkbox-container">
+          <mat-checkbox (change)="onPolynomialRegressionCurveCheckboxToggle($event.checked)"
+                        [checked]="displayPolynomialRegressionTrendline"
+                        labelPosition="before" class="example-margin">Display Polynomial Regression Curve</mat-checkbox>
+        </section>
+        @if (displayPolynomialRegressionTrendline) {
+          <div class="form-container">
+            <p class="parameter-comment">y = αx<span class="sup-n">n</span> + βx<span class="sup-n">n-1</span> + γx + δ</p>
+            <p class="parameter-comment">Select the degree <strong>n</strong> of the polynome</p>
+            <mat-form-field class="polynomial-degree-form-field">
+              <mat-label class="polynomial-degree-selection-label">n</mat-label>
+              <mat-select name="polynomialDegreeSelect" [(ngModel)]="polynomialDegreeParameter"
+                          (selectionChange)="getPolynomialRegressionTrendline()">
+                @for (degree of degrees; track degree) {
+                  <mat-option [value]="degree.value">{{ degree.viewValue }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        }
+        <section class="checkbox-container">
+          <mat-checkbox (change)="onExponentialSmoothingCurveCheckboxToggle($event.checked)"
+                        [checked]="displayExponentialSmoothingTrendline"
+                        labelPosition="before" class="example-margin">Display Exponential Smoothing Curve</mat-checkbox>
+        </section>
+        @if (displayExponentialSmoothingTrendline) {
+          <span class="alpha-form-span">
+            <form class="alpha-form">
+              <div class="form-container">
+                <p class="parameter-comment">S<span class="sub-n">t</span> = &alpha;y<span class="sub-n">t</span> + (1-&alpha;)S<span class="sub-n">t-1</span></p>
+                <p class="parameter-comment">Enter a value for <strong>&alpha;</strong></p>
+              <mat-form-field class="alpha-form-field">
+                <mat-label class="alpha-input-label">&alpha;</mat-label>
+                <input type="number" matInput placeholder="0-1" name="numberInput" class="alpha-input"
+                       [(ngModel)]="alphaParameter" (ngModelChange)="onAlphaParameterInputChange($event, numberInput)"
+                       #numberInput="ngModel" min="0" max="1" step="0.01">
+                @if (numberInput.hasError('min')) {
+                  <mat-error>0 ≤ &alpha; ≤ 1</mat-error>
+                }
+                @if (numberInput.hasError('max')) {
+                  <mat-error>0 ≤ &alpha; ≤ 1</mat-error>
+                }
+              </mat-form-field>
+              </div>
+            </form>
+          </span>
+        }
+      }
+      @if (selectedMetrics.length == 2 && !selectedMetrics.includes('polynomialRegression') && !selectedMetrics.includes('exponentialSmoothing')) {
+        <div class="title-section-container">
+          <h1>Display options</h1>
+        </div>
+        <section class="checkbox-container">
+          <mat-checkbox (change)="onTwoYAxisDisplayCheckboxToggle($event.checked)" [checked]="displayOnTwoYAxesOption"
+                        labelPosition="before" class="example-margin">Display on two Y axes</mat-checkbox>
+        </section>
+      }
+    </div>
+    }
+    <div class="chart-container">
+      <apx-chart #chart
+                 [series]="chartOptions.series"
+                 [chart]="chartOptions.chart"
+                 [xaxis]="chartOptions.xaxis"
+                 [title]="chartOptions.title">
+      </apx-chart>
+    </div>
+  </div>
+} @else {
+  <div class="container">
+    <div class="pick-a-metric-message-container">
+      <mat-icon>keyboard_arrow_up</mat-icon>
+      <h1> Select one or several metrics and a time window</h1>
+    </div>
+  </div>
+}

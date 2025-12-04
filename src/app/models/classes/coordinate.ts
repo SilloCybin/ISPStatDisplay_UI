@@ -1,4 +1,4 @@
-export class MetricPoint{
+export class Coordinate {
 
   private _value: number;
   private _timestamp: Date;

@@ -8,6 +8,9 @@ export function formatMetricName(metric: string) {
   } else if (metric == 'packetLoss') {
     return metric.charAt(0).toUpperCase()
       + metric.slice(1).replace(/([A-Z])/g, ' $1') + ' (%)';
+  } else if (metric == 'polynomialRegression' || metric == 'exponentialSmoothing'){
+    return metric.charAt(0).toUpperCase()
+      + metric.slice(1).replace(/([A-Z])/g, ' $1');
   }
   return '';
 }

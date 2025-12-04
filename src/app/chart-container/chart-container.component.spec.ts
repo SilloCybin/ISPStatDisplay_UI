@@ -1,31 +1,31 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {MetricChartComponent} from './metric-chart.component';
-import {MetricChartService} from '../services/metric-chart.service';
+import {ChartContainerComponent} from './chart-container.component';
+import {CoordinatesService} from '../services/coordinates.service';
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {TimeWindowSettings} from '../models/classes/time-window';
 
 describe('MetricChartComponent', () => {
-  let component: MetricChartComponent;
-  let fixture: ComponentFixture<MetricChartComponent>;
-  let service: MetricChartService;
+  let component: ChartContainerComponent;
+  let fixture: ComponentFixture<ChartContainerComponent>;
+  let service: CoordinatesService;
   let httpMock: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MetricChartComponent],
+      imports: [ChartContainerComponent],
       providers: [
-        MetricChartService,
+        CoordinatesService,
         provideHttpClient(),
         provideHttpClientTesting()
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(MetricChartComponent) as any;
+    fixture = TestBed.createComponent(ChartContainerComponent) as any;
     component = fixture.componentInstance;
 
-    service = TestBed.inject(MetricChartService);
+    service = TestBed.inject(CoordinatesService);
     httpMock = TestBed.inject(HttpTestingController);
 
     spyOn(component, 'updateChart');

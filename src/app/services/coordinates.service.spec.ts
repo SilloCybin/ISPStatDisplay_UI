@@ -8,13 +8,13 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 
-import {MetricChartService} from './metric-chart.service';
+import {CoordinatesService} from './coordinates.service';
 import {TimeWindowSettings} from '../models/classes/time-window';
 import {FormControl, FormGroup} from '@angular/forms';
 
 
-describe('MetricChartService', () => {
-  let service: MetricChartService;
+describe('CoordinatesService', () => {
+  let service: CoordinatesService;
   let httpMock: HttpTestingController;
 
   const entireHistoryWindowSettingsMock: TimeWindowSettings = new TimeWindowSettings(
@@ -70,12 +70,12 @@ describe('MetricChartService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        MetricChartService,
+        CoordinatesService,
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
       ]
     });
-    service = TestBed.inject(MetricChartService);
+    service = TestBed.inject(CoordinatesService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 
@@ -121,7 +121,7 @@ describe('MetricChartService', () => {
 
 
   it('should fetch MetricPoints via HTTP GET request on /getAll/{metric} url', () => {
-    service.getMetricPoints('downloadBandwidth', entireHistoryWindowSettingsMock).subscribe(data => {
+    service.getCoordinates('downloadBandwidth', entireHistoryWindowSettingsMock).subscribe(data => {
       expect(data).toEqual(metricPointArrayMock);
     });
 
@@ -133,7 +133,7 @@ describe('MetricChartService', () => {
 
   it('should fetch Metric Points from start date to now via HTTP GET request on /fromStartDate url', () => {
 
-    service.getMetricPoints('downloadBandwidth', startDateWindowSettingsMock).subscribe(data => {
+    service.getCoordinates('downloadBandwidth', startDateWindowSettingsMock).subscribe(data => {
       expect(data).toEqual(metricPointArrayMock);
     });
 
@@ -152,7 +152,7 @@ describe('MetricChartService', () => {
     const startDateString = new Date(now);
     startDateString.setDate(now.getDate() - 2);
 
-    service.getMetricPoints('downloadBandwidth', xTimeUnitsBackWindowSettingsMock).subscribe(data => {
+    service.getCoordinates('downloadBandwidth', xTimeUnitsBackWindowSettingsMock).subscribe(data => {
       expect(data).toEqual(metricPointArrayMock);
     });
 
@@ -170,7 +170,7 @@ describe('MetricChartService', () => {
     const startDateString = '2025-11-11T15:00:26.000Z';
     const endDateString = '2025-11-12T15:00:26.000Z';
 
-    service.getMetricPoints('downloadBandwidth', dateRangeWindowSettingsMock).subscribe(data => {
+    service.getCoordinates('downloadBandwidth', dateRangeWindowSettingsMock).subscribe(data => {
       expect(data).toEqual(metricPointArrayMock);
     });
 
@@ -186,7 +186,7 @@ describe('MetricChartService', () => {
 
   it('should handle HTTP errors correctly', () => {
 
-    service.getMetricPoints('downloadBandwidth', entireHistoryWindowSettingsMock).subscribe({
+    service.getCoordinates('downloadBandwidth', entireHistoryWindowSettingsMock).subscribe({
       next: () => fail('Expected an error'),
       error: (err) => {
         expect(err instanceof Error).toBeTrue();

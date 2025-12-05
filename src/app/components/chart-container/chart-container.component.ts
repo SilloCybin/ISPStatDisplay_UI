@@ -1,21 +1,21 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {CoordinatesService} from '../services/coordinates.service';
+import {CoordinatesService} from '../../services/coordinates.service';
 import {ChartComponent} from 'ng-apexcharts';
 import {MatCheckbox} from '@angular/material/checkbox';
-import {TimeWindowSettings} from '../models/classes/time-window';
+import {TimeWindowSettings} from '../../models/classes/time-window';
 import {combineLatest, debounceTime, Observable, Subject, takeUntil} from 'rxjs';
 import {MatIcon} from '@angular/material/icon';
-import {formatMetricName} from '../utils/metric-name-formatter';
-import {Coordinate} from '../models/classes/coordinate';
-import {ChartOptions} from '../models/types/chart-options';
+import {formatMetricName} from '../../utils/metric-name-formatter';
+import {Coordinate} from '../../models/classes/coordinate';
+import {ChartOptions} from '../../models/types/chart-options';
 import {FormsModule, NgModel} from '@angular/forms';
 import {MatError, MatFormField} from '@angular/material/form-field';
 import {MatInput, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
-import {PolynomialDegree} from '../models/interfaces/polynomial-degree';
-import {polynomialDegrees} from '../constants/polynomialDegrees';
-import {chartOptions} from '../constants/chartOptions';
-import {colors} from '../constants/colors'
+import {PolynomialDegree} from '../../models/interfaces/polynomial-degree';
+import {polynomialDegrees} from '../../constants/polynomialDegrees';
+import {chartOptions} from '../../constants/chartOptions';
+import {colors} from '../../constants/colors'
 
 @Component({
   selector: 'app-chart-container',
@@ -40,7 +40,7 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
   displayOnTwoYAxesOption: boolean = false;
 
   displayPolynomialRegressionTrendline: boolean = false;
-  displayExponentialSmoothingTrendline: boolean = false;
+  displayExponentialMovingAverageTrendline: boolean = false;
 
   timeWindowSettings: TimeWindowSettings = new TimeWindowSettings();
 
@@ -63,7 +63,7 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.metricChartService.selectedMetric$.pipe(takeUntil(this.destroySubject)).subscribe((metrics) => {
       this.selectedMetrics = metrics;
-      this.sortCheckboxesOut();
+      this.setDisplayOnTwoYAxesOption();
       this.updateChart();
     });
 
@@ -76,11 +76,11 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
 
     this.alphaParameterSubject.pipe(takeUntil(this.destroySubject)).pipe(debounceTime(1000)).subscribe((value) => {
       this.alphaParameter = value;
-      this.getExponentialSmoothingTrendline();
+      this.getExponentialMovingAverageTrendline();
     });
 
-    this.metricChartService.resetTrendlines$.pipe(takeUntil(this.destroySubject)).subscribe(() => {
-      this.unCheckTrendlineCheckboxes()
+    this.metricChartService.resetTrendlinesSelections$.pipe(takeUntil(this.destroySubject)).subscribe(() => {
+      this.resetTrendlinesSelections()
     })
 
   }
@@ -152,7 +152,7 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
     });
   }
 
-  onPolynomialRegressionCurveCheckboxToggle(checked: boolean) {
+  onPolynomialRegressionCheckboxToggle(checked: boolean) {
     this.displayPolynomialRegressionTrendline = checked;
     if (!checked && this.selectedMetrics.includes('polynomialRegression')) {
       this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'polynomialRegression');
@@ -161,8 +161,8 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
     }
   }
 
-  onExponentialSmoothingCurveCheckboxToggle(checked: boolean) {
-    this.displayExponentialSmoothingTrendline = checked;
+  onExponentialMovingAverageCheckboxToggle(checked: boolean) {
+    this.displayExponentialMovingAverageTrendline = checked;
     if (!checked && this.selectedMetrics.includes('exponentialSmoothing')) {
       this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'exponentialSmoothing');
       this.alphaParameter = null;
@@ -171,22 +171,18 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
   }
 
   getPolynomialRegressionTrendline() {
-    if (this.displayPolynomialRegressionTrendline) {
-      if (this.selectedMetrics.includes('polynomialRegression')) {
-        this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'polynomialRegression');
-      }
-      this.selectedMetrics.push('polynomialRegression');
+    if (this.selectedMetrics.includes('polynomialRegression')) {
+      this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'polynomialRegression');
     }
+    this.selectedMetrics.push('polynomialRegression');
     this.metricChartService.setSelectedMetrics(this.selectedMetrics);
   }
 
-  getExponentialSmoothingTrendline() {
-    if (this.displayExponentialSmoothingTrendline) {
-      if (this.selectedMetrics.includes('exponentialSmoothing')) {
-        this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'exponentialSmoothing');
-      }
-      this.selectedMetrics.push('exponentialSmoothing');
+  getExponentialMovingAverageTrendline() {
+    if (this.selectedMetrics.includes('exponentialSmoothing')) {
+      this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'exponentialSmoothing');
     }
+    this.selectedMetrics.push('exponentialSmoothing');
     this.metricChartService.setSelectedMetrics(this.selectedMetrics);
   }
 
@@ -201,14 +197,14 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
     this.updateChart();
   }
 
-  unCheckTrendlineCheckboxes() {
+  resetTrendlinesSelections() {
     this.displayPolynomialRegressionTrendline = false;
     this.polynomialDegreeParameter = null;
-    this.displayExponentialSmoothingTrendline = false;
+    this.displayExponentialMovingAverageTrendline = false;
     this.alphaParameter = null;
   }
 
-  sortCheckboxesOut() {
+  setDisplayOnTwoYAxesOption() {
     if (this.selectedMetrics.length !== 2) {
       this.displayOnTwoYAxesOption = false;
     }

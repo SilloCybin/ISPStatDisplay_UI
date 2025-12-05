@@ -1,19 +1,18 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
-import {DataExplorerSidebarComponent} from './data-explorer-sidebar.component';
-import {HomePageService} from '../services/home-page.service';
+import {SeriesConfigurationBarComponent} from './series-configuration-bar.component';
+import {HomePageService} from '../../services/home-page.service';
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {CoordinatesService} from '../services/coordinates.service';
-import {TimeWindowSettings} from '../models/classes/time-window';
+import {CoordinatesService} from '../../services/coordinates.service';
+import {TimeWindowSettings} from '../../models/classes/time-window';
 import {MatRadioChange} from '@angular/material/radio';
 import {FormControl, FormGroup} from '@angular/forms';
 
-describe('DataExplorerSidebarComponent', () => {
-  let component: DataExplorerSidebarComponent;
-  let fixture: ComponentFixture<DataExplorerSidebarComponent>;
+describe('SeriesConfigurationBarComponent', () => {
+  let component: SeriesConfigurationBarComponent;
+  let fixture: ComponentFixture<SeriesConfigurationBarComponent>;
   let service: CoordinatesService;
-  let httpMock: HttpTestingController;
 
   const selectedMetricsMock1 = ['downloadBandwidth', 'packetLoss'];
   const selectedMetricsMock2: string[] = [];
@@ -26,7 +25,7 @@ describe('DataExplorerSidebarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DataExplorerSidebarComponent],
+      imports: [SeriesConfigurationBarComponent],
       providers: [
         CoordinatesService,
         provideHttpClient(),
@@ -35,12 +34,11 @@ describe('DataExplorerSidebarComponent', () => {
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(DataExplorerSidebarComponent);
+    fixture = TestBed.createComponent(SeriesConfigurationBarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
 
     service = TestBed.inject(CoordinatesService);
-    httpMock = TestBed.inject(HttpTestingController);
   });
 
 

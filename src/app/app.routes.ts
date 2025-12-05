@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { HomePageComponent } from './home-page/home-page.component';
-import { DataExplorer } from './data-explorer/data-explorer.component';
-import {ChartContainerComponent} from './chart-container/chart-container.component';
+import { HomePageComponent } from './components/home-page/home-page.component';
+import { DataExplorer } from './components/data-explorer/data-explorer.component';
+import {ChartContainerComponent} from './components/chart-container/chart-container.component';
 
 export const routes: Routes = [
   {
@@ -18,12 +18,12 @@ export const routes: Routes = [
     component: DataExplorer,
     children: [
       {
-        path: 'MetricChart',
+        path: 'Chart',
         component: ChartContainerComponent
       },
       {
         path: '',
-        redirectTo: 'MetricChart',
+        redirectTo: 'Chart',
         pathMatch: 'full'
       }
     ]

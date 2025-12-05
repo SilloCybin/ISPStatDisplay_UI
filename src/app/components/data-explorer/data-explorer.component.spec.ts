@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DataExplorer } from './data-explorer.component';
-import {CoordinatesService} from '../services/coordinates.service';
+import {CoordinatesService} from '../../services/coordinates.service';
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {HomePageService} from '../services/home-page.service';
+import {HomePageService} from '../../services/home-page.service';
 
 describe('DataExplorer', () => {
   let component: DataExplorer;

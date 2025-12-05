@@ -1,8 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {CoordinatesService} from '../services/coordinates.service';
+import {CoordinatesService} from '../../services/coordinates.service';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton} from '@angular/material/button';
-import {isMetricDisabled} from '../utils/sidebar-metric-selection-algo';
+import {isMetricDisabled} from '../../utils/sidebar-metric-selection-algo';
 import {MatRadioButton, MatRadioChange, MatRadioGroup} from '@angular/material/radio';
 import {MatError, MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
@@ -11,13 +11,13 @@ import {MatOption, MatSelect} from '@angular/material/select';
 import {MatNativeDateModule, provideNativeDateAdapter} from '@angular/material/core';
 import {DatepickerToggleWrapperModule} from './single-date-calendar/single-date-calendar-wrapper';
 import {DoubleDatepickerToggleWrapperModule} from './double-date-calendar/double-date-calendar-wrapper';
-import {TimeWindowSettings} from '../models/classes/time-window';
+import {TimeWindowSettings} from '../../models/classes/time-window';
 import {debounceTime, Subject, takeUntil} from 'rxjs';
-import {TimeUnit} from '../models/interfaces/time-unit.interface';
-import {timeUnits} from '../constants/timeUnits';
+import {TimeUnit} from '../../models/interfaces/time-unit.interface';
+import {timeUnits} from '../../constants/timeUnits';
 
 @Component({
-  selector: 'app-data-explorer-sidebar',
+  selector: 'app-series-configuration-bar',
   imports: [
     MatIcon,
     MatButton,
@@ -37,10 +37,10 @@ import {timeUnits} from '../constants/timeUnits';
   providers: [
     provideNativeDateAdapter()
   ],
-  templateUrl: './data-explorer-sidebar.component.html',
-  styleUrl: './data-explorer-sidebar.component.css'
+  templateUrl: './series-configuration-bar.component.html',
+  styleUrl: './series-configuration-bar.component.css'
 })
-export class DataExplorerSidebarComponent implements OnInit, OnDestroy{
+export class SeriesConfigurationBarComponent implements OnInit, OnDestroy{
 
   selectedMetrics: string[] = [];
   selectedTimeWindow: string | null = null;
@@ -76,7 +76,7 @@ export class DataExplorerSidebarComponent implements OnInit, OnDestroy{
       this.selectedMetrics.push(selectedMetric);
     }
     this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'polynomialRegression').filter(item => item !== 'exponentialSmoothing');
-    this.metricChartService.resetTrendlines();
+    this.metricChartService.resetTrendlinesSelections();
     this.metricChartService.setSelectedMetrics(this.selectedMetrics);
   }
 

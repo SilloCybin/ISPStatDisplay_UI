@@ -1,18 +1,18 @@
 import {Component, inject, OnDestroy, OnInit} from '@angular/core';
-import {SpeedtestInterface} from '../models/interfaces/speedtest.interface';
+import {SpeedtestInterface} from '../../models/interfaces/speedtest.interface';
 import {Observable, Subject, Subscription, takeUntil} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
-import {HomepageMetricItem} from '../models/classes/homepage-metric-item';
+import {HomepageMetricItem} from '../../models/classes/homepage-metric-item';
 import {SlickCarouselModule} from 'ngx-slick-carousel';
-import {AveragesInterface} from '../models/interfaces/averages.interface';
+import {AveragesInterface} from '../../models/interfaces/averages.interface';
 import {combineLatest} from 'rxjs';
 import {MatIcon} from '@angular/material/icon';
-import {HomePageService} from '../services/home-page.service';
+import {HomePageService} from '../../services/home-page.service';
 import {ServerDetailsDialog} from './server-details-dialog/server-details-dialog';
-import {makeBandwidthPretty, makeMetricPretty} from '../utils/pretty-value-maker';
-import {loadHomepageMetricItems} from '../utils/homepage-metric-item-loader';
-import {StandardDeviationsInterface} from '../models/interfaces/standard-deviations.interface';
+import {makeBandwidthPretty, makeMetricPretty} from '../../utils/pretty-value-maker';
+import {loadHomepageMetricItems} from '../../utils/homepage-metric-item-loader';
+import {StandardDeviationsInterface} from '../../models/interfaces/standard-deviations.interface';
 
 @Component({
   selector: 'app-home-page',

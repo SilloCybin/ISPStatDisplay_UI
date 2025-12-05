@@ -3,22 +3,20 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HomePageComponent } from './home-page.component';
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {HomePageService} from '../services/home-page.service';
+import {HomePageService} from '../../services/home-page.service';
 import {of, Subject, throwError} from 'rxjs';
-import {AveragesInterface} from '../models/interfaces/averages.interface';
-import {SpeedtestInterface} from '../models/interfaces/speedtest.interface';
+import {AveragesInterface} from '../../models/interfaces/averages.interface';
+import {SpeedtestInterface} from '../../models/interfaces/speedtest.interface';
 import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
-
-@Component({selector: 'ngx-slick-carousel', template: ''})
-class MockSlickCarouselComponent {}
+import {StandardDeviationsInterface} from '../../models/interfaces/standard-deviations.interface';
 
 describe('HomePageComponent', () => {
   let component: HomePageComponent;
   let fixture: ComponentFixture<HomePageComponent>;
   let service: HomePageService;
-  let httpMock: HttpTestingController;
   let averagesMockStream$: Subject<AveragesInterface>;
   let speedtestDataMockStream$: Subject<SpeedtestInterface>;
+  let standardDeviationsMockStream$: Subject<StandardDeviationsInterface>;
 
   let averagesMock: AveragesInterface = {
     downloadBandwidth : 55517188,
@@ -39,6 +37,42 @@ describe('HomePageComponent', () => {
   }
 
   let averagesMockStream: AveragesInterface = {
+    downloadBandwidth : 55517188,
+    uploadBandwidth : 12774742,
+    downloadPingLatency : 6.26132,
+    uploadPingLatency : 9.88004,
+    idlePingLatency : 2.40281,
+    downloadPingHigh : 143.071,
+    uploadPingHigh : 163.655,
+    idlePingHigh : 2.72327,
+    downloadPingLow : 1.6918,
+    uploadPingLow : 2.87336,
+    idlePingLow : 2.03654,
+    downloadPingJitter : 4.08998,
+    uploadPingJitter : 6.18479,
+    idlePingJitter : 0.324705,
+    packetLoss : 0.344288
+  }
+
+  let standardDeviationsMock: StandardDeviationsInterface = {
+    downloadBandwidth : 55517188,
+    uploadBandwidth : 12774742,
+    downloadPingLatency : 6.26132,
+    uploadPingLatency : 9.88004,
+    idlePingLatency : 2.40281,
+    downloadPingHigh : 143.071,
+    uploadPingHigh : 163.655,
+    idlePingHigh : 2.72327,
+    downloadPingLow : 1.6918,
+    uploadPingLow : 2.87336,
+    idlePingLow : 2.03654,
+    downloadPingJitter : 4.08998,
+    uploadPingJitter : 6.18479,
+    idlePingJitter : 0.324705,
+    packetLoss : 0.344289
+  }
+
+  let standardDeviationsMockStream: StandardDeviationsInterface = {
     downloadBandwidth : 55517188,
     uploadBandwidth : 12774742,
     downloadPingLatency : 6.26132,
@@ -151,20 +185,12 @@ describe('HomePageComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting()
       ],
-    }).overrideComponent(HomePageComponent, {
-      set: {
-        imports: [
-          MockSlickCarouselComponent,
-        ]
-      }
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HomePageComponent);
     component = fixture.componentInstance;
 
     service = TestBed.inject(HomePageService);
-    httpMock = TestBed.inject(HttpTestingController);
   });
 
 
@@ -173,15 +199,17 @@ describe('HomePageComponent', () => {
   });
 
 
-  it('should load SpeedtestData and Averages data on component instantiation', () => {
+  it('should load SpeedtestData, Averages and StandardDeviations data on component instantiation', () => {
 
     spyOn(service, 'getAverages').and.returnValue(of(averagesMock));
     spyOn(service, 'getLatestSpeedtestData').and.returnValue(of(speedtestDataMock));
+    spyOn(service, 'getStandardDeviations').and.returnValue(of(standardDeviationsMock));
 
     fixture.detectChanges();
 
     expect(component.averages).toEqual(averagesMock);
     expect(component.latestSpeedtestData).toEqual(speedtestDataMock);
+    expect(component.standardDeviations).toEqual(standardDeviationsMock);
     expect(component.timestamp).toEqual(new Date('2025-11-14T16:00:23Z'));
     expect(component.homepageMetricList.length).toBeGreaterThan(0);
   })
@@ -191,17 +219,21 @@ describe('HomePageComponent', () => {
 
     averagesMockStream$ = new Subject<AveragesInterface>();
     speedtestDataMockStream$ = new Subject<SpeedtestInterface>();
+    standardDeviationsMockStream$ = new Subject<StandardDeviationsInterface>();
 
     spyOn(service, 'streamAverages').and.returnValue(averagesMockStream$);
     spyOn(service, 'streamSpeedtestData').and.returnValue(speedtestDataMockStream$);
+    spyOn(service, 'streamStandardDeviations').and.returnValue(standardDeviationsMockStream$);
 
     fixture.detectChanges();
 
     averagesMockStream$.next(averagesMockStream);
     speedtestDataMockStream$.next(speedtestDataMockStream);
+    standardDeviationsMockStream$.next(standardDeviationsMockStream)
 
     expect(component.averages).toEqual(averagesMockStream);
     expect(component.latestSpeedtestData).toEqual(speedtestDataMockStream);
+    expect(component.standardDeviations).toEqual(standardDeviationsMockStream);
     expect(component.timestamp).toEqual(new Date('2025-11-14T16:00:23Z'));
     expect(component.homepageMetricList.length).toBeGreaterThan(0);
   })
@@ -212,12 +244,15 @@ describe('HomePageComponent', () => {
 
     spyOn(service, 'getAverages').and.returnValue(throwError(() => error));
     spyOn(service, 'getLatestSpeedtestData').and.returnValue(of(speedtestDataMock));
+    spyOn(service, 'getStandardDeviations').and.returnValue(of(standardDeviationsMock));
 
     const spy = spyOn(console, 'error');
 
     fixture.detectChanges();
 
     expect(spy).toHaveBeenCalledWith('Error fetching data:', 'Request failed');
+    expect(component.latestSpeedtestData).not.toEqual(speedtestDataMock);
+    expect(component.standardDeviations).not.toEqual(standardDeviationsMock);
   })
 
 

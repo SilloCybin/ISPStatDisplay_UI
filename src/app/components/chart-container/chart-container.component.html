@@ -9,14 +9,14 @@
           <h1>Display trendlines</h1>
         </div>
         <section class="checkbox-container">
-          <mat-checkbox (change)="onPolynomialRegressionCurveCheckboxToggle($event.checked)"
+          <mat-checkbox (change)="onPolynomialRegressionCheckboxToggle($event.checked)"
                         [checked]="displayPolynomialRegressionTrendline"
-                        labelPosition="before" class="example-margin">Display Polynomial Regression Curve</mat-checkbox>
+                        labelPosition="before" class="example-margin">Polynomial Regression</mat-checkbox>
         </section>
         @if (displayPolynomialRegressionTrendline) {
           <div class="form-container">
-            <p class="parameter-comment">y = αx<span class="sup-n">n</span> + βx<span class="sup-n">n-1</span> + γx + δ</p>
-            <p class="parameter-comment">Select the degree <strong>n</strong> of the polynome</p>
+            <p class="parameter-comment">y = αx<span class="sup-n">n</span> + βx<span class="sup-n">n-1</span> + ... + γx + δ</p>
+            <p class="parameter-comment">Select the degree <strong>n</strong> of the polynomial</p>
             <mat-form-field class="polynomial-degree-form-field">
               <mat-label class="polynomial-degree-selection-label">n</mat-label>
               <mat-select name="polynomialDegreeSelect" [(ngModel)]="polynomialDegreeParameter"
@@ -29,11 +29,11 @@
           </div>
         }
         <section class="checkbox-container">
-          <mat-checkbox (change)="onExponentialSmoothingCurveCheckboxToggle($event.checked)"
-                        [checked]="displayExponentialSmoothingTrendline"
-                        labelPosition="before" class="example-margin">Display Exponential Smoothing Curve</mat-checkbox>
+          <mat-checkbox (change)="onExponentialMovingAverageCheckboxToggle($event.checked)"
+                        [checked]="displayExponentialMovingAverageTrendline"
+                        labelPosition="before" class="example-margin">Exponential Moving Average</mat-checkbox>
         </section>
-        @if (displayExponentialSmoothingTrendline) {
+        @if (displayExponentialMovingAverageTrendline) {
           <span class="alpha-form-span">
             <form class="alpha-form">
               <div class="form-container">

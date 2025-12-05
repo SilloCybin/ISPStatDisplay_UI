@@ -1,6 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
-import {ServerInterface} from '../../models/interfaces/server.interface';
+import {ServerInterface} from '../../../models/interfaces/server.interface';
 
 @Component({
   selector: 'server-details-dialog',

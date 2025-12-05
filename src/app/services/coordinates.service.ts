@@ -21,8 +21,9 @@ export class CoordinatesService {
   private timeWindowSettingsSubject: BehaviorSubject<TimeWindowSettings> = new BehaviorSubject<TimeWindowSettings>(new TimeWindowSettings());
   timeWindowSettings$: Observable<TimeWindowSettings> = this.timeWindowSettingsSubject.asObservable();
 
-  private resetTrendlinesSubject: Subject<void> = new Subject<void>();
-  resetTrendlines$: Observable<void> = this.resetTrendlinesSubject.asObservable();
+  private resetTrendlinesSelectionsSubject: Subject<void> = new Subject<void>();
+  resetTrendlinesSelections$: Observable<void> = this.resetTrendlinesSelectionsSubject.asObservable();
+
 
   constructor(private httpClient: HttpClient) {}
 
@@ -188,7 +189,7 @@ export class CoordinatesService {
     this.timeWindowSettingsSubject.next(new TimeWindowSettings());
   }
 
-  resetTrendlines() {
-    this.resetTrendlinesSubject.next();
+  resetTrendlinesSelections() {
+    this.resetTrendlinesSelectionsSubject.next();
   }
 }

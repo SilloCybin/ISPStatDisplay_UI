@@ -1,3 +1,5 @@
+import {Coordinate} from '../models/classes/coordinate';
+
 export function determineStartDateFromNow(timeUnitNumber: number, timeUnit: string): Date {
   const now = new Date();
   const startDate = new Date(now);
@@ -20,4 +22,11 @@ export function determineStartDateFromNow(timeUnitNumber: number, timeUnit: stri
   }
 
   return startDate;
+}
+
+export function is5DayOrMoreSeries(series: Coordinate[]): boolean{
+  const startDate = new Date(series[0].timestamp);
+  const endDate = new Date (series[series.length - 1].timestamp);
+
+  return (((endDate.getTime() - startDate.getTime()) / 86400000) >= 5)
 }

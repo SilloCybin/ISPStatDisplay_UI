@@ -126,85 +126,74 @@ describe('CoordinatesService', () => {
   });
 
 
-  it('should fetch series via HTTP GET request on /getAll/{metric} url', () => {
+  it('should fetch entire metric series via HTTP GET request on /getSeries url', () => {
     let coordinates: Coordinate[] = [];
 
     service.getCoordinates('downloadBandwidth', entireHistoryWindowSettingsMock).subscribe(data => {
       coordinates = data;
     });
 
-    const req = httpMock.expectOne(`${service['apiBaseUrl']}/getAll/downloadBandwidth`);
+    const req = httpMock.expectOne(
+      (request) => request.url === `${service['apiBaseUrl']}/getSeries`
+    );
     expect(req.request.method).toBe('GET');
-
+    expect(req.request.params.get('metric')).toEqual('downloadBandwidth');
+    expect(req.request.params.get('startDate')).toBeNull();
+    expect(req.request.params.get('endDate')).toBeNull();
+    expect(req.request.params.get('trendline')).toBeNull();
+    expect(req.request.params.get('parameter')).toBeNull();
     req.flush(metricPointArrayMock);
 
     expect(coordinates).toEqual(metricPointArrayMock);
   });
 
 
-  it('should fetch series from start date to now via HTTP GET request on /fromStartDate url', () => {
+  it('should fetch entire trendline via HTTP GET request on /getSeries url', () => {
     let coordinates: Coordinate[] = [];
 
-    service.getCoordinates('downloadBandwidth', startDateWindowSettingsMock).subscribe(data => {
+    service.getCoordinates('downloadBandwidth', entireHistoryWindowSettingsMock, 'polynomialRegression', 2).subscribe(data => {
       coordinates = data;
     });
 
     const req = httpMock.expectOne(
-      (request) => request.url === `${service['apiBaseUrl']}/fromStartDate/downloadBandwidth`
+      (request) => request.url === `${service['apiBaseUrl']}/getSeries`
     );
     expect(req.request.method).toBe('GET');
-    expect(req.request.params.get('startDate')).toEqual('2025-11-11T15:00:26.000Z');
+    expect(req.request.params.get('metric')).toEqual('downloadBandwidth');
+    expect(req.request.params.get('startDate')).toBeNull();
+    expect(req.request.params.get('endDate')).toBeNull();
+    expect(req.request.params.get('trendline')).toEqual('polynomialRegression');
+    expect(Number(req.request.params.get('parameter'))).toEqual(2);
     req.flush(metricPointArrayMock);
 
     expect(coordinates).toEqual(metricPointArrayMock);
   });
 
 
-  it('should fetch series from x time units back from now via HTTP GET request on /fromStartDate url', () => {
+  it('should fetch trendline from start date via HTTP GET request on /getSeries url', () => {
     let coordinates: Coordinate[] = [];
-
-    const now = new Date();
-    const startDateString = new Date(now);
-    startDateString.setDate(now.getDate() - 2);
-
-    service.getCoordinates('downloadBandwidth', xTimeUnitsBackWindowSettingsMock).subscribe(data => {
-      coordinates = data;
-    });
-
-    const req = httpMock.expectOne(
-      (request) => request.url === `${service['apiBaseUrl']}/fromStartDate/downloadBandwidth`
-    );
-    expect(req.request.method).toBe('GET');
-    expect(req.request.params.get('startDate')!.split('.')[0]).toEqual(startDateString.toISOString().split('.')[0]);
-    req.flush(metricPointArrayMock);
-
-    expect(coordinates).toEqual(metricPointArrayMock);
-  });
-
-
-  it('should fetch series on date range via HTTP GET request on /dateRange url', () => {
-    let coordinates: Coordinate[] = [];
-
     const startDateString = '2025-11-11T15:00:26.000Z';
-    const endDateString = '2025-11-12T15:00:26.000Z';
 
-    service.getCoordinates('downloadBandwidth', dateRangeWindowSettingsMock).subscribe(data => {
+    service.getCoordinates('downloadBandwidth', startDateWindowSettingsMock, 'exponentialMovingAverage', 0.8).subscribe(data => {
       coordinates = data;
     });
 
     const req = httpMock.expectOne(
-      (request) => request.url === `${service['apiBaseUrl']}/dateRange/downloadBandwidth`
+      (request) => request.url === `${service['apiBaseUrl']}/getSeries`
     );
     expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('metric')).toEqual('downloadBandwidth');
     expect(req.request.params.get('startDate')).toEqual(startDateString);
-    expect(req.request.params.get('endDate')).toEqual(endDateString);
+    expect(req.request.params.get('endDate')).toBeNull();
+    expect(req.request.params.get('trendline')).toEqual('exponentialMovingAverage');
+    expect(Number(req.request.params.get('parameter'))).toEqual(0.8);
     req.flush(metricPointArrayMock);
 
     expect(coordinates).toEqual(metricPointArrayMock);
   });
 
 
-  it('should fetch trendline series on date range via HTTP GET request on /getTrendlineOnDateRange url', () => {
+  it('should fetch trendline series on date range via HTTP GET request on /getSeries url', () => {
     let coordinates: Coordinate[] = [];
 
     const startDateString = '2025-11-11T15:00:26.000Z';
@@ -215,12 +204,14 @@ describe('CoordinatesService', () => {
     });
 
     const req = httpMock.expectOne(
-      (request) => request.url === `${service['apiBaseUrl']}/getTrendlineOnDateRange/downloadBandwidth/polynomialRegression`
+      (request) => request.url === `${service['apiBaseUrl']}/getSeries`
     );
     expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('metric')).toEqual('downloadBandwidth');
     expect(req.request.params.get('startDate')).toEqual(startDateString);
     expect(req.request.params.get('endDate')).toEqual(endDateString);
-    expect(Number(req.request.params.get('degree'))).toEqual(2);
+    expect(req.request.params.get('trendline')).toEqual('polynomialRegression');
+    expect(Number(req.request.params.get('parameter'))).toEqual(2);
     req.flush(metricPointArrayMock);
 
     expect(coordinates).toEqual(metricPointArrayMock);
@@ -237,9 +228,11 @@ describe('CoordinatesService', () => {
       }
     });
 
-    const req = httpMock.expectOne(`${service['apiBaseUrl']}/getAll/downloadBandwidth`)
+    const req = httpMock.expectOne((request) => request.url === `${service['apiBaseUrl']}/getSeries`)
     req.flush('Not found', {status: 404, statusText: 'Not found'})
 
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('metric')).toEqual('downloadBandwidth');
     expect(error! instanceof Error).toBeTrue();
     expect(error!.message).toContain('404 Not found')
   });

@@ -1,16 +1,20 @@
 @if (chartOptions.series.length) {
   <div class="options-and-chart-container">
     @if (selectedMetrics.length < 3
-    || (selectedMetrics.length < 4 && (selectedMetrics.includes('polynomialRegression') || selectedMetrics.includes('exponentialSmoothing')))) {
+    || (selectedMetrics.length < 4 && (selectedMetrics.includes('polynomialRegression') || selectedMetrics.includes('exponentialMovingAverage')))) {
     <div class="other-options-parameter-section">
       @if (selectedMetrics.length == 1
-      || (selectedMetrics.length < 4 && (selectedMetrics.includes('polynomialRegression') || selectedMetrics.includes('exponentialSmoothing')))) {
+      || (selectedMetrics.length < 4 && (selectedMetrics.includes('polynomialRegression') || selectedMetrics.includes('exponentialMovingAverage')))) {
         <div class="title-section-container">
           <h1>Display trendlines</h1>
         </div>
+        @if(!canDisplayTrendlines){
+          <p class="parameter-comment">Trendlines need 5-day series or more to be displayed</p>
+        }
         <section class="checkbox-container">
           <mat-checkbox (change)="onPolynomialRegressionCheckboxToggle($event.checked)"
                         [checked]="displayPolynomialRegressionTrendline"
+                        [disabled]="!canDisplayTrendlines"
                         labelPosition="before" class="example-margin">Polynomial Regression</mat-checkbox>
         </section>
         @if (displayPolynomialRegressionTrendline) {
@@ -31,6 +35,7 @@
         <section class="checkbox-container">
           <mat-checkbox (change)="onExponentialMovingAverageCheckboxToggle($event.checked)"
                         [checked]="displayExponentialMovingAverageTrendline"
+                        [disabled]="!canDisplayTrendlines"
                         labelPosition="before" class="example-margin">Exponential Moving Average</mat-checkbox>
         </section>
         @if (displayExponentialMovingAverageTrendline) {
@@ -56,7 +61,7 @@
           </span>
         }
       }
-      @if (selectedMetrics.length == 2 && !selectedMetrics.includes('polynomialRegression') && !selectedMetrics.includes('exponentialSmoothing')) {
+      @if (selectedMetrics.length == 2 && !selectedMetrics.includes('polynomialRegression') && !selectedMetrics.includes('exponentialMovingAverage')) {
         <div class="title-section-container">
           <h1>Display options</h1>
         </div>

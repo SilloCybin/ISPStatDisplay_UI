@@ -12,6 +12,7 @@ export class DatepickerToggleWrapperComponent {
   selectedDate!: Date;
 
   minDate = new Date('2025-10-17');
+  maxDate = new Date();
 
   constructor() {}
 

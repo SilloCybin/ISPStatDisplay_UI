@@ -3,10 +3,11 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 import {ChartContainerComponent} from './chart-container.component';
 import {CoordinatesService} from '../../services/coordinates.service';
 import {provideHttpClient} from '@angular/common/http';
-import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 import {TimeWindowSettings} from '../../models/classes/time-window';
-import {FormControl, FormGroup, NgModel} from '@angular/forms';
+import {NgModel} from '@angular/forms';
 import {of} from 'rxjs';
+import {timeOpsWrapper} from '../../utils/time-ops-wrapper';
 
 describe('ChartContainerComponent', () => {
   let component: ChartContainerComponent;
@@ -15,8 +16,8 @@ describe('ChartContainerComponent', () => {
 
   const selectedMetricsMock1 = ['downloadBandwidth', 'polynomialRegression'];
   const selectedMetricsMock2 = ['downloadBandwidth'];
-  const selectedMetricsMock3 = ['downloadBandwidth', 'exponentialSmoothing'];
-  const selectedMetricsMock4 = ['downloadBandwidth', 'polynomialRegression', 'exponentialSmoothing'];
+  const selectedMetricsMock3 = ['downloadBandwidth', 'exponentialMovingAverage'];
+  const selectedMetricsMock4 = ['downloadBandwidth', 'polynomialRegression', 'exponentialMovingAverage'];
 
   const timeWindowSettingsMock = new TimeWindowSettings(
     false,
@@ -178,13 +179,13 @@ describe('ChartContainerComponent', () => {
     component.selectedMetrics = selectedMetricsMock3;
 
     component.getExponentialMovingAverageTrendline();
-    expect(spy).toHaveBeenCalledWith(['downloadBandwidth', 'exponentialSmoothing']);
+    expect(spy).toHaveBeenCalledWith(['downloadBandwidth', 'exponentialMovingAverage']);
     expect(component.updateChart).toHaveBeenCalled();
 
     component.selectedMetrics = selectedMetricsMock2;
 
     component.getExponentialMovingAverageTrendline();
-    expect(spy).toHaveBeenCalledWith(['downloadBandwidth', 'exponentialSmoothing']);
+    expect(spy).toHaveBeenCalledWith(['downloadBandwidth', 'exponentialMovingAverage']);
     expect(component.updateChart).toHaveBeenCalled();
   });
 
@@ -201,7 +202,7 @@ describe('ChartContainerComponent', () => {
     component.onExponentialMovingAverageCheckboxToggle(false);
 
     expect(component.displayExponentialMovingAverageTrendline).toBeFalse()
-    expect(component.selectedMetrics.includes('exponentialSmoothing')).toBeFalse();
+    expect(component.selectedMetrics.includes('exponentialMovingAverage')).toBeFalse();
     expect(component.alphaParameter).toBeNull();
     expect(spy).toHaveBeenCalledWith(['downloadBandwidth'])
   })
@@ -221,9 +222,10 @@ describe('ChartContainerComponent', () => {
   });
 
 
-  it('should launch getCoordinates with correct parameters on updateChart()', fakeAsync(() => {
+  it(`should launch service's getCoordinates() with correct parameters on updateChart()`, fakeAsync(() => {
 
     const spy = spyOn(service, 'getCoordinates').and.returnValue(of([]));
+    (timeOpsWrapper as any).is5DayOrMoreSeries = () => true;
     (component.updateChart as jasmine.Spy).and.callThrough();
 
     fixture.detectChanges();
@@ -271,7 +273,7 @@ describe('ChartContainerComponent', () => {
         startDate: null,
         dateRange: null
       }),
-      'exponentialSmoothing',
+      'exponentialMovingAverage',
       0.8
     )
   }))

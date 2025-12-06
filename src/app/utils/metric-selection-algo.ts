@@ -3,7 +3,7 @@ export function isMetricDisabled(metric: string, selectedMetrics: string[], isSe
 
     selectedMetrics = selectedMetrics
       .filter(item => item !== 'polynomialRegression')
-      .filter(item => item !== 'exponentialSmoothing');
+      .filter(item => item !== 'exponentialMovingAverage');
 
   if (selectedMetrics.length < 2) {
     return false;

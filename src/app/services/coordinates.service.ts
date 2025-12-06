@@ -4,9 +4,8 @@ import {BehaviorSubject, catchError, Observable, Subject} from 'rxjs';
 import {Coordinate} from '../models/classes/coordinate';
 import {environment} from '../../environments/environment';
 import {TimeWindowSettings} from '../models/classes/time-window';
-import {determineStartDateFromNow} from '../utils/start-date-calculator';
-import {handleError} from "./http-error-handler";
-import {AbstractControl} from '@angular/forms';
+import {determineStartDateFromNow} from '../utils/time-ops';
+import {handleError} from "../utils/http-error-handler";
 
 @Injectable({
   providedIn: 'root'
@@ -30,148 +29,30 @@ export class CoordinatesService {
 
   getCoordinates(metric: string, timeWindowSettings: TimeWindowSettings, trendline?: string, parameter?: number): Observable<Coordinate[]> {
 
+    let startDate: any;
+    let endDate: any;
+
     if (timeWindowSettings.timeUnitNumber && timeWindowSettings.timeUnit){
-      const startDate: Date = determineStartDateFromNow(timeWindowSettings.timeUnitNumber, timeWindowSettings.timeUnit);
-
-      if (trendline === undefined) {
-        return this.httpClient.get<Coordinate[]>(
-          `${this.apiBaseUrl}/fromStartDate/${metric}`, {
-            params: {
-              startDate: startDate.toISOString()
-            }
-          }
-        ).pipe(
-          catchError(handleError)
-        );
-      } else if (trendline === 'polynomialRegression' && parameter !== undefined) {
-        return this.httpClient.get<Coordinate[]>(
-          `${this.apiBaseUrl}/getTrendlineFromStartDate/${metric}/${trendline}`, {
-            params: {
-              startDate: startDate.toISOString(),
-              degree: parameter
-            }
-          }
-        ).pipe(
-          catchError(handleError)
-        );
-      } else if (trendline === 'exponentialSmoothing' && parameter !== undefined){
-        return this.httpClient.get<Coordinate[]>(
-          `${this.apiBaseUrl}/getTrendlineFromStartDate/${metric}/${trendline}`, {
-            params: {
-              startDate: startDate.toISOString(),
-              alpha: parameter
-            }
-          }
-        ).pipe(
-          catchError(handleError)
-        );
-      }
-
-    } else if (timeWindowSettings.startDate) {
-
-      if (trendline === undefined) {
-        return this.httpClient.get<Coordinate[]>(
-          `${this.apiBaseUrl}/fromStartDate/${metric}`, {
-            params: {
-              startDate: timeWindowSettings.startDate.toISOString()
-            }
-          }
-        ).pipe(
-          catchError(handleError)
-        );
-      } else if (trendline === 'polynomialRegression' && parameter !== undefined) {
-        return this.httpClient.get<Coordinate[]>(
-          `${this.apiBaseUrl}/getTrendlineFromStartDate/${metric}/${trendline}`, {
-            params: {
-              startDate: timeWindowSettings.startDate.toISOString(),
-              degree: parameter
-            }
-          }
-        ).pipe(
-          catchError(handleError)
-        );
-      } else if (trendline === 'exponentialSmoothing' && parameter !== undefined) {
-        return this.httpClient.get<Coordinate[]>(
-          `${this.apiBaseUrl}/getTrendlineFromStartDate/${metric}/${trendline}`, {
-            params: {
-              startDate: timeWindowSettings.startDate.toISOString(),
-              alpha: parameter
-            }
-          }
-        ).pipe(
-          catchError(handleError)
-        );
-      }
-
-    } else if (timeWindowSettings.dateRange) {
-      const startDate: AbstractControl<any, any> | null = timeWindowSettings.dateRange.get("start");
-      const endDate: AbstractControl<any, any> | null = timeWindowSettings.dateRange.get("end");
-
-      if (trendline === undefined){
-        return this.httpClient.get<Coordinate[]>(
-          `${this.apiBaseUrl}/dateRange/${metric}`, {
-            params: {
-              startDate: startDate?.value.toISOString(),
-              endDate: endDate?.value.toISOString()
-            }
-          }
-        ).pipe(
-          catchError(handleError)
-        );
-      } else if (trendline === 'polynomialRegression' && parameter !== undefined) {
-        return this.httpClient.get<Coordinate[]>(
-          `${this.apiBaseUrl}/getTrendlineOnDateRange/${metric}/${trendline}`, {
-            params: {
-              startDate: startDate?.value.toISOString(),
-              endDate: endDate?.value.toISOString(),
-              degree: parameter
-            }
-          }
-        ).pipe(
-          catchError(handleError)
-        );
-      } else if (trendline === 'exponentialSmoothing' && parameter !== undefined) {
-        return this.httpClient.get<Coordinate[]>(
-          `${this.apiBaseUrl}/getTrendlineOnDateRange/${metric}/${trendline}`, {
-            params: {
-              startDate: startDate?.value.toISOString(),
-              endDate: endDate?.value.toISOString(),
-              alpha: parameter
-            }
-          }
-        ).pipe(
-          catchError(handleError)
-        );
-      }
-
-    } else {
-      // Entire history was selected
-      if (trendline === undefined){
-        return this.httpClient.get<Coordinate[]>(`${this.apiBaseUrl}/getAll/${metric}`)
-          .pipe(
-            catchError(handleError)
-          );
-      } else if (trendline === 'polynomialRegression' && parameter !== undefined){
-        return this.httpClient.get<Coordinate[]>(`${this.apiBaseUrl}/getEntireTrendline/${metric}/${trendline}`, {
-          params: {
-            degree: parameter
-          }
-        })
-          .pipe(
-            catchError(handleError)
-          );
-      } else if (trendline === 'exponentialSmoothing' && parameter !== undefined){
-        return this.httpClient.get<Coordinate[]>(`${this.apiBaseUrl}/getEntireTrendline/${metric}/${trendline}`, {
-          params: {
-            alpha: parameter
-          }
-        })
-          .pipe(
-            catchError(handleError)
-          );
-      }
+      startDate = determineStartDateFromNow(timeWindowSettings.timeUnitNumber, timeWindowSettings.timeUnit);
+    } else if (timeWindowSettings.startDate){
+      startDate = timeWindowSettings.startDate;
+    } else if (timeWindowSettings.dateRange){
+      startDate = timeWindowSettings.dateRange.get("start")?.value;
+      endDate = timeWindowSettings.dateRange.get("end")?.value;
     }
-    return new Observable<Coordinate[]>();
+
+    return this.httpClient.get<Coordinate[]>(`${this.apiBaseUrl}/getSeries`, {
+        params: {
+          metric: metric,
+          ...(startDate !== undefined && {startDate: startDate.toISOString()}),
+          ...(endDate !== undefined && {endDate: endDate.toISOString()}),
+          ...(trendline !== undefined && {trendline: trendline}),
+          ...(parameter !== undefined && {parameter: parameter})
+        }
+      }
+    ).pipe(
+      catchError(handleError)
+    )
   }
 
   setSelectedMetrics(selectedMetrics: string[]){

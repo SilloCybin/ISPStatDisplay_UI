@@ -4,7 +4,7 @@ import {AveragesInterface} from '../models/interfaces/averages.interface';
 import {environment} from '../../environments/environment';
 import {SpeedtestInterface} from '../models/interfaces/speedtest.interface';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {handleError} from './http-error-handler';
+import {handleError} from '../utils/http-error-handler';
 import {StandardDeviationsInterface} from '../models/interfaces/standard-deviations.interface';
 
 @Injectable({

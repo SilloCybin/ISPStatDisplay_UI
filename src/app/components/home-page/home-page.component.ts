@@ -10,7 +10,7 @@ import {combineLatest} from 'rxjs';
 import {MatIcon} from '@angular/material/icon';
 import {HomePageService} from '../../services/home-page.service';
 import {ServerDetailsDialog} from './server-details-dialog/server-details-dialog';
-import {makeBandwidthPretty, makeMetricPretty} from '../../utils/pretty-value-maker';
+import {makeBandwidthPretty, makeMetricPretty} from '../../utils/parsing-ops';
 import {loadHomepageMetricItems} from '../../utils/homepage-metric-item-loader';
 import {StandardDeviationsInterface} from '../../models/interfaces/standard-deviations.interface';
 

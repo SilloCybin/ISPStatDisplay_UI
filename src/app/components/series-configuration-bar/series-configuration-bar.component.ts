@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CoordinatesService} from '../../services/coordinates.service';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton} from '@angular/material/button';
-import {isMetricDisabled} from '../../utils/sidebar-metric-selection-algo';
+import {isMetricDisabled} from '../../utils/metric-selection-algo';
 import {MatRadioButton, MatRadioChange, MatRadioGroup} from '@angular/material/radio';
 import {MatError, MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
@@ -75,7 +75,7 @@ export class SeriesConfigurationBarComponent implements OnInit, OnDestroy{
     } else {
       this.selectedMetrics.push(selectedMetric);
     }
-    this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'polynomialRegression').filter(item => item !== 'exponentialSmoothing');
+    this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'polynomialRegression').filter(item => item !== 'exponentialMovingAverage');
     this.metricChartService.resetTrendlinesSelections();
     this.metricChartService.setSelectedMetrics(this.selectedMetrics);
   }

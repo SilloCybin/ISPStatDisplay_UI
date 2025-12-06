@@ -16,6 +16,7 @@ export class DoubleDatepickerToggleWrapperComponent {
   });
 
   minDate = new Date('2025-10-17');
+  maxDate = new Date();
 
   constructor() {
     this.selectedRange.valueChanges.subscribe(range => {

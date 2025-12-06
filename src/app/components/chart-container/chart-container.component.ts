@@ -5,7 +5,7 @@ import {MatCheckbox} from '@angular/material/checkbox';
 import {TimeWindowSettings} from '../../models/classes/time-window';
 import {combineLatest, debounceTime, Observable, Subject, takeUntil} from 'rxjs';
 import {MatIcon} from '@angular/material/icon';
-import {formatMetricName} from '../../utils/metric-name-formatter';
+import {formatMetricName} from '../../utils/parsing-ops';
 import {Coordinate} from '../../models/classes/coordinate';
 import {ChartOptions} from '../../models/types/chart-options';
 import {FormsModule, NgModel} from '@angular/forms';
@@ -16,6 +16,7 @@ import {PolynomialDegree} from '../../models/interfaces/polynomial-degree';
 import {polynomialDegrees} from '../../constants/polynomialDegrees';
 import {chartOptions} from '../../constants/chartOptions';
 import {colors} from '../../constants/colors'
+import {timeOpsWrapper} from '../../utils/time-ops-wrapper';
 
 @Component({
   selector: 'app-chart-container',
@@ -54,8 +55,9 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
   @ViewChild("chart") chart: ChartComponent | undefined;
   chartOptions: ChartOptions = chartOptions;
 
-  colors: string[] = colors;
+  private colors: string[] = colors;
   degrees: PolynomialDegree[] = polynomialDegrees;
+  canDisplayTrendlines: boolean = false;
 
   constructor(private metricChartService: CoordinatesService) {
   }
@@ -102,7 +104,7 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
     const seriesObservables: Observable<Coordinate[]>[] = this.selectedMetrics.map(metric => {
       if (metric === 'polynomialRegression' && this.polynomialDegreeParameter !== null) {
         return this.metricChartService.getCoordinates(this.selectedMetrics[0], this.timeWindowSettings, metric, this.polynomialDegreeParameter);
-      } else if (metric === 'exponentialSmoothing' && this.alphaParameter !== null) {
+      } else if (metric === 'exponentialMovingAverage' && this.alphaParameter !== null) {
         return this.metricChartService.getCoordinates(this.selectedMetrics[0], this.timeWindowSettings, metric, this.alphaParameter);
       } else {
         return this.metricChartService.getCoordinates(metric, this.timeWindowSettings);
@@ -110,6 +112,8 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
     });
 
     combineLatest(seriesObservables).subscribe(series => {
+
+      this.canDisplayTrendlines = timeOpsWrapper.is5DayOrMoreSeries(series[0]);
 
       let yaxis: any[] = [];
 
@@ -163,8 +167,8 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
 
   onExponentialMovingAverageCheckboxToggle(checked: boolean) {
     this.displayExponentialMovingAverageTrendline = checked;
-    if (!checked && this.selectedMetrics.includes('exponentialSmoothing')) {
-      this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'exponentialSmoothing');
+    if (!checked && this.selectedMetrics.includes('exponentialMovingAverage')) {
+      this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'exponentialMovingAverage');
       this.alphaParameter = null;
       this.metricChartService.setSelectedMetrics(this.selectedMetrics);
     }
@@ -179,10 +183,10 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
   }
 
   getExponentialMovingAverageTrendline() {
-    if (this.selectedMetrics.includes('exponentialSmoothing')) {
-      this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'exponentialSmoothing');
+    if (this.selectedMetrics.includes('exponentialMovingAverage')) {
+      this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'exponentialMovingAverage');
     }
-    this.selectedMetrics.push('exponentialSmoothing');
+    this.selectedMetrics.push('exponentialMovingAverage');
     this.metricChartService.setSelectedMetrics(this.selectedMetrics);
   }
 

@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, catchError, Observable, Subject} from 'rxjs';
-import {Coordinate} from '../models/classes/coordinate';
-import {environment} from '../../environments/environment';
-import {TimeWindowSettings} from '../models/classes/time-window';
-import {determineStartDateFromNow} from '../utils/time-ops';
-import {handleError} from "../utils/http-error-handler";
+import {BehaviorSubject, catchError, Observable, Subject, throwError} from 'rxjs';
+import {Coordinate} from '../../models/classes/coordinate';
+import {environment} from '../../../environments/local/environment';
+import {TimeWindowSettings} from '../../models/classes/time-window';
+import {determineStartDateFromNow} from '../../utils/time-ops';
 
 @Injectable({
   providedIn: 'root'
@@ -51,7 +50,9 @@ export class CoordinatesService {
         }
       }
     ).pipe(
-      catchError(handleError)
+      catchError(error => {
+        return throwError(() => error);
+      })
     )
   }
 

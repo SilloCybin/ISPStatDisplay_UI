@@ -14,3 +14,13 @@ nav[mat-tab-nav-bar] {
 a[mat-tab-link]{
   max-width: 100px;
 }
+
+.account-button{
+  align-self: center;
+}
+
+.container{
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}

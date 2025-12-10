@@ -1,0 +1,55 @@
+<div class="floating-text">Speedtest Analytics</div>
+<div class="signup-page-container">
+  <div class="signup-form-container">
+    <h2>Sign up</h2>
+    @if (signupError){
+      <section class="incorrect-credentials-message">
+        <p><strong>{{signupError}}</strong></p>
+        <button matIconButton (click)="onErrorMessageClear()">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </section>
+    }
+    @if (signupSuccess){
+      <section class="successful-account-creation-message">
+        <mat-icon>check-icon</mat-icon>
+        <p><strong>{{signupSuccess}}</strong></p>
+      </section>
+    }
+    <form class="form" [formGroup]="credentials" (ngSubmit)="onSubmit()">
+      <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Username (Email)</mat-label>
+        <input matInput formControlName="username" name="username" autocomplete="username">
+        @if (credentials.get('username')?.hasError('required')){
+          <mat-error>Email is required</mat-error>
+        }
+        @if (credentials.get('username')?.hasError('email')){
+          <mat-error>Enter a valid email address</mat-error>
+        }
+      </mat-form-field>
+      <br>
+      <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput formControlName="password" type="password">
+        @if (credentials.get('password')?.hasError('required')){
+          <mat-error>Password is required</mat-error>
+        }
+        @if (credentials.get('password')?.hasError('minlength')){
+          <mat-error>Password must be at least 8 characters long</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Check password</mat-label>
+        <input matInput formControlName="passwordCheck" type="password">
+        @if (credentials.get('passwordCheck')?.hasError('required')){
+          <mat-error>Please confirm password</mat-error>
+        }
+        @if (credentials.get('passwordCheck')?.hasError('passwordsMismatch')){
+          <mat-error>Password mismatch</mat-error>
+        }
+      </mat-form-field>
+      <button class="sign-up-button" matButton="filled" [disabled]="credentials.invalid" type="submit">Sign Up</button>
+    </form>
+    <p class="link-to-login">Already have an account ? <a routerLink="/login">Login</a></p>
+  </div>
+</div>

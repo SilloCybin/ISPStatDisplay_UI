@@ -10,9 +10,9 @@ getTestBed().initTestEnvironment(
   platformBrowserTesting()
 );
 
-import './app/services/home-page.service.spec';
-import './app/services/coordinates.service.spec';
-import './app/components/home-page/home-page.component.spec';
+import './app/services/homepage/home-page.service.spec';
+import './app/services/coordinates/coordinates.service.spec';
+import './app/components/home-page/homepage.component.spec';
 import './app/components/data-explorer/data-explorer.component.spec';
 import './app/components/series-configuration-bar/series-configuration-bar.component.spec';
 import './app/components/chart-container/chart-container.component.spec';

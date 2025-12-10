@@ -1,15 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DataExplorer } from './data-explorer.component';
-import {CoordinatesService} from '../../services/coordinates.service';
+import {CoordinatesService} from '../../services/coordinates/coordinates.service';
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {HomePageService} from '../../services/home-page.service';
+import {HomepageService} from '../../services/homepage/homepage.service';
 
 describe('DataExplorer', () => {
   let component: DataExplorer;
   let fixture: ComponentFixture<DataExplorer>;
-  let service: HomePageService;
+  let service: HomepageService;
   let httpMock: HttpTestingController;
 
   beforeEach(async () => {
@@ -27,7 +27,7 @@ describe('DataExplorer', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    service = TestBed.inject(HomePageService);
+    service = TestBed.inject(HomepageService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 

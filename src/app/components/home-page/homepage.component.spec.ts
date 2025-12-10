@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HomePageComponent } from './home-page.component';
-import {provideHttpClient} from '@angular/common/http';
+import { HomepageComponent } from './homepage.component';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {HomePageService} from '../../services/home-page.service';
+import {HomepageService} from '../../services/homepage/homepage.service';
 import {of, Subject, throwError} from 'rxjs';
 import {AveragesInterface} from '../../models/interfaces/averages.interface';
 import {SpeedtestInterface} from '../../models/interfaces/speedtest.interface';
 import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
 import {StandardDeviationsInterface} from '../../models/interfaces/standard-deviations.interface';
+import {provideHttpClient} from '@angular/common/http';
 
 describe('HomePageComponent', () => {
-  let component: HomePageComponent;
-  let fixture: ComponentFixture<HomePageComponent>;
-  let service: HomePageService;
+  let component: HomepageComponent;
+  let fixture: ComponentFixture<HomepageComponent>;
+  let service: HomepageService;
   let averagesMockStream$: Subject<AveragesInterface>;
   let speedtestDataMockStream$: Subject<SpeedtestInterface>;
   let standardDeviationsMockStream$: Subject<StandardDeviationsInterface>;
@@ -178,19 +178,19 @@ describe('HomePageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HomePageComponent],
+      imports: [HomepageComponent],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        HomePageService,
+        HomepageService,
         provideHttpClient(),
         provideHttpClientTesting()
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(HomePageComponent);
+    fixture = TestBed.createComponent(HomepageComponent);
     component = fixture.componentInstance;
 
-    service = TestBed.inject(HomePageService);
+    service = TestBed.inject(HomepageService);
   });
 
 

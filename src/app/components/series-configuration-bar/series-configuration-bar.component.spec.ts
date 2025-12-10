@@ -1,10 +1,10 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {SeriesConfigurationBarComponent} from './series-configuration-bar.component';
-import {HomePageService} from '../../services/home-page.service';
+import {HomepageService} from '../../services/homepage/homepage.service';
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {CoordinatesService} from '../../services/coordinates.service';
+import {CoordinatesService} from '../../services/coordinates/coordinates.service';
 import {TimeWindowSettings} from '../../models/classes/time-window';
 import {MatRadioChange} from '@angular/material/radio';
 import {FormControl, FormGroup} from '@angular/forms';

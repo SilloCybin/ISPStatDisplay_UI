@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { HomePageService } from './home-page.service';
+import { HomepageService } from './homepage.service';
 import {
   provideHttpClient,
   withInterceptorsFromDi,
@@ -8,12 +8,12 @@ import {
   provideHttpClientTesting,
   HttpTestingController,
 } from '@angular/common/http/testing';
-import { AveragesInterface } from '../models/interfaces/averages.interface';
-import { SpeedtestInterface } from '../models/interfaces/speedtest.interface';
+import { AveragesInterface } from '../../models/interfaces/averages.interface';
+import { SpeedtestInterface } from '../../models/interfaces/speedtest.interface';
 import { Observable, of } from 'rxjs';
 
 describe('HomePageService', () => {
-  let service: HomePageService;
+  let service: HomepageService;
   let httpMock: HttpTestingController;
 
   const mockAverages: AveragesInterface = {
@@ -80,13 +80,13 @@ describe('HomePageService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        HomePageService,
+        HomepageService,
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     });
 
-    service = TestBed.inject(HomePageService);
+    service = TestBed.inject(HomepageService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 

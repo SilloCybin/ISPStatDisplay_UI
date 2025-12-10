@@ -45,32 +45,11 @@
                 }
               ]
             },
-            "pi-mysql": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.pi-mysql.ts"
-                }
-              ],
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1.5MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
-                }
-              ],
-              "outputHashing": "all"
-            },
             "pi-mongodb": {
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.pi-mongodb.ts"
+                  "replace": "src/environments/local/environment.ts",
+                  "with": "src/environments/pi/environment.pi-mongodb.ts"
                 }
               ],
               "budgets": [
@@ -102,7 +81,10 @@
               "buildTarget": "SpeedDataVisualizer:build:production"
             },
             "development": {
-              "buildTarget": "SpeedDataVisualizer:build:development"
+              "buildTarget": "SpeedDataVisualizer:build:development",
+              "ssl": true,
+              "sslCert": "cert.pem",
+              "sslKey": "key.pem"
             }
           },
           "defaultConfiguration": "development"

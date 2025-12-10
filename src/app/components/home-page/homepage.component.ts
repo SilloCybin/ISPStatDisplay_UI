@@ -1,6 +1,6 @@
 import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {SpeedtestInterface} from '../../models/interfaces/speedtest.interface';
-import {Observable, Subject, Subscription, takeUntil} from 'rxjs';
+import {filter, Observable, Subject, Subscription, take, takeUntil} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
 import {HomepageMetricItem} from '../../models/classes/homepage-metric-item';
@@ -8,11 +8,12 @@ import {SlickCarouselModule} from 'ngx-slick-carousel';
 import {AveragesInterface} from '../../models/interfaces/averages.interface';
 import {combineLatest} from 'rxjs';
 import {MatIcon} from '@angular/material/icon';
-import {HomePageService} from '../../services/home-page.service';
+import {HomepageService} from '../../services/homepage/homepage.service';
 import {ServerDetailsDialog} from './server-details-dialog/server-details-dialog';
 import {makeBandwidthPretty, makeMetricPretty} from '../../utils/parsing-ops';
 import {loadHomepageMetricItems} from '../../utils/homepage-metric-item-loader';
 import {StandardDeviationsInterface} from '../../models/interfaces/standard-deviations.interface';
+import {AuthService} from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-home-page',
@@ -24,10 +25,10 @@ import {StandardDeviationsInterface} from '../../models/interfaces/standard-devi
     SlickCarouselModule,
     MatIcon
   ],
-  templateUrl: './home-page.component.html',
-  styleUrl: './home-page.component.css'
+  templateUrl: './homepage.component.html',
+  styleUrl: './homepage.component.css'
 })
-export class HomePageComponent implements OnInit, OnDestroy {
+export class HomepageComponent implements OnInit, OnDestroy {
 
   latestSpeedtestData: SpeedtestInterface | null = null;
   averages: AveragesInterface | null = null;
@@ -35,7 +36,6 @@ export class HomePageComponent implements OnInit, OnDestroy {
   timestamp: Date | undefined;
   prettyTimestamp: string | undefined;
 
-  subscriptions: Subscription[] = [];
   destroySubject: Subject<void> = new Subject<void>();
 
   homepageMetricList: HomepageMetricItem[] = [];
@@ -44,26 +44,36 @@ export class HomePageComponent implements OnInit, OnDestroy {
   protected readonly makeBandwidthPretty = makeBandwidthPretty;
   protected readonly makeMetricPretty = makeMetricPretty;
 
-  constructor(private homePageService: HomePageService) {}
+  constructor(private homePageService: HomepageService, private authService: AuthService) {}
 
   ngOnInit() {
-    const speedtest$: Observable<SpeedtestInterface> = this.homePageService.getLatestSpeedtestData().pipe(takeUntil(this.destroySubject));
-    const averages$: Observable<AveragesInterface> = this.homePageService.getAverages().pipe(takeUntil(this.destroySubject));
-    const standardDeviations$: Observable<StandardDeviationsInterface> = this.homePageService.getStandardDeviations().pipe(takeUntil(this.destroySubject));
 
-    const averagesStream$: Observable<AveragesInterface> = this.homePageService.streamAverages().pipe(takeUntil(this.destroySubject));
-    const speedtestDataStream$: Observable<SpeedtestInterface> = this.homePageService.streamSpeedtestData().pipe(takeUntil(this.destroySubject));
-    const standardDeviationStream$: Observable<StandardDeviationsInterface> = this.homePageService.streamStandardDeviations().pipe(takeUntil(this.destroySubject));
+    this.authService.loggedIn$.pipe(
+      takeUntil(this.destroySubject),
+      filter(loggedIn => (loggedIn && !!this.authService.getToken())),
+      take(1)
+    ).subscribe(() => {
 
-    this.loadUpdatedData(averages$, speedtest$, standardDeviations$);
-    this.loadUpdatedData(averagesStream$, speedtestDataStream$, standardDeviationStream$);
+      const speedtest$ = this.homePageService.getLatestSpeedtestData();
+      const averages$ = this.homePageService.getAverages();
+      const standardDeviations$ = this.homePageService.getStandardDeviations();
+
+      const speedtestDataStream$ = this.homePageService.streamSpeedtestData();
+      const averagesStream$ = this.homePageService.streamAverages();
+      const standardDeviationsStream$ = this.homePageService.streamStandardDeviations();
+
+      this.loadUpdatedData(averages$, speedtest$, standardDeviations$);
+      this.loadUpdatedData(averagesStream$, speedtestDataStream$, standardDeviationsStream$);
+    })
   }
 
   loadUpdatedData(averages$: Observable<AveragesInterface>,
                   speedtestData$: Observable<SpeedtestInterface>,
                   standardDeviations$: Observable<StandardDeviationsInterface>){
 
-    const combinedSub = combineLatest([speedtestData$, averages$, standardDeviations$]).subscribe({
+    combineLatest([speedtestData$, averages$, standardDeviations$])
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe({
       next: ([speedtestData, averages, standardDeviations]) => {
         this.latestSpeedtestData = speedtestData;
         this.averages = averages;
@@ -75,7 +85,6 @@ export class HomePageComponent implements OnInit, OnDestroy {
       },
       error: (error) => console.error('Error fetching data:', error.message)
     });
-    this.subscriptions.push(combinedSub);
   }
 
   openDialog() {
@@ -92,7 +101,6 @@ export class HomePageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
     this.destroySubject.next();
     this.destroySubject.complete();
   }

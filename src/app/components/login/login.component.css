@@ -1,0 +1,75 @@
+.login-page-container{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.form{
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field{
+  width: 300px;
+}
+
+.incorrect-credentials-message{
+  color: red;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.successful-account-creation-message{
+  color: green;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.login-form-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sign-in-button{
+  align-self: flex-end;
+}
+
+.link-to-signup{
+  align-self: center;
+}
+
+:host::before {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 20%;
+  transform: translate(-50%, -50%);
+  width: 45%;
+  height: 45%;
+  background: url('logo.png') no-repeat center/contain;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+.floating-text{
+  position: fixed;
+  top: 20%;
+  left: 20%;
+  transform: translateX(-50%);
+  font-family: Roboto, sans-serif;
+  font-size: 4rem;
+  color: #215ca4;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}

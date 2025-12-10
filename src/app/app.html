@@ -1,11 +1,21 @@
-<nav mat-tab-nav-bar [tabPanel]="tabPanel">
-  <a mat-tab-link [routerLink]="'/HomePage'" routerLinkActive #HomePage= "routerLinkActive"
-     [active]="HomePage.isActive">Homepage</a>
-  <a mat-tab-link [routerLink]="'/DataExplorer'" routerLinkActive #DataExplorer= "routerLinkActive"
-     [active]="DataExplorer.isActive">Data Explorer</a>
-  <span class="spacer"></span>
-  <a mat-tab-link disabled>Login</a>
-</nav>
-<mat-tab-nav-panel #tabPanel>
-  <router-outlet></router-outlet>
-</mat-tab-nav-panel>
+<div class="container">
+  <nav mat-tab-nav-bar [tabPanel]="tabPanel">
+    @if (!disableAccountButton) {
+      <a mat-tab-link [routerLink]="'/homepage'" routerLinkActive #HomePage="routerLinkActive"
+         [active]="HomePage.isActive">Homepage</a>
+      <a mat-tab-link [routerLink]="'/dataExplorer'" routerLinkActive #DataExplorer="routerLinkActive"
+         [active]="DataExplorer.isActive">Data Explorer</a>
+      <span class="spacer"></span>
+      <button class="account-button" matIconButton [matMenuTriggerFor]="menu">
+        <mat-icon>person</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item [disabled]=true [routerLink]="'/preferences'"><mat-icon>tune</mat-icon>Preferences</button>
+        <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon>Logout</button>
+      </mat-menu>
+    }
+  </nav>
+  <mat-tab-nav-panel #tabPanel>
+    <router-outlet></router-outlet>
+  </mat-tab-nav-panel>
+</div>

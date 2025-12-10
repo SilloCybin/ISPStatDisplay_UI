@@ -1,0 +1,35 @@
+<div class="floating-text">Speedtest Analytics</div>
+<div class="login-page-container">
+  <div class="login-form-container">
+    <h2>Log In</h2>
+    @if (loginError){
+      <section class="incorrect-credentials-message">
+        <p><strong>{{loginError}}</strong></p>
+        <button matIconButton (click)="onErrorMessageClear()">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </section>
+    }
+    <form class="form" [formGroup]="credentials" (ngSubmit)="onSubmit()">
+      <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Username (Email)</mat-label>
+        <input matInput formControlName="username" name="username" autocomplete="username">
+        @if (credentials.get('username')?.hasError('required')){
+          <mat-error>Email is required</mat-error>
+        }
+        @if (credentials.get('username')?.hasError('email')){
+          <mat-error>Enter a valid email</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput formControlName="password" type="password">
+        @if (credentials.get('password')?.hasError('required')){
+          <mat-error>Password is required</mat-error>
+        }
+      </mat-form-field>
+      <button class="sign-in-button" matButton="filled" [disabled]="credentials.invalid" type="submit">Sign In</button>
+    </form>
+    <p class="link-to-signup">Not signed up yet ? <a routerLink="/signup">Create an account</a></p>
+  </div>
+</div>

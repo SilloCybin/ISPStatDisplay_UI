@@ -1,7 +1,7 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {ChartContainerComponent} from './chart-container.component';
-import {CoordinatesService} from '../../services/coordinates.service';
+import {CoordinatesService} from '../../services/coordinates/coordinates.service';
 import {provideHttpClient} from '@angular/common/http';
 import {provideHttpClientTesting} from '@angular/common/http/testing';
 import {TimeWindowSettings} from '../../models/classes/time-window';

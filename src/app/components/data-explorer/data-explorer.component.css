@@ -6,10 +6,9 @@
 }
 
 .chart-parameter-selector {
-  background-color: #eaeaea;
+  background-color: #eee;
 }
 
 .chart-container {
-  background-color: #eee;
   flex: 1;
 }

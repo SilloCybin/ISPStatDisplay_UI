@@ -9,9 +9,9 @@ import {
 } from '@angular/common/http/testing';
 
 import {CoordinatesService} from './coordinates.service';
-import {TimeWindowSettings} from '../models/classes/time-window';
+import {TimeWindowSettings} from '../../models/classes/time-window';
 import {FormControl, FormGroup} from '@angular/forms';
-import {Coordinate} from '../models/classes/coordinate';
+import {Coordinate} from '../../models/classes/coordinate';
 
 
 describe('CoordinatesService', () => {

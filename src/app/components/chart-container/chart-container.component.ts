@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {CoordinatesService} from '../../services/coordinates.service';
+import {CoordinatesService} from '../../services/coordinates/coordinates.service';
 import {ChartComponent} from 'ng-apexcharts';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {TimeWindowSettings} from '../../models/classes/time-window';

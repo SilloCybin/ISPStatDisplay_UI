@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {CoordinatesService} from '../../services/coordinates.service';
+import {CoordinatesService} from '../../services/coordinates/coordinates.service';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton} from '@angular/material/button';
 import {isMetricDisabled} from '../../utils/metric-selection-algo';

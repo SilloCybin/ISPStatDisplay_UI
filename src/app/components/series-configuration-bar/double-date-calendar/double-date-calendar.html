@@ -1,6 +1,6 @@
 <mat-form-field name="dateRangeSelector" class="form-container">
   <mat-label>MM/DD/YYYY - MM/DD/YYYY</mat-label>
-  <mat-date-range-input [min]="minDate" [max]="maxDate" [formGroup]="selectedRange" [rangePicker]="picker">
+  <mat-date-range-input [min]="minDate" [max]="maxDate" [formGroup]="selectedDateRange" [rangePicker]="picker">
     <input matStartDate formControlName="start" placeholder="Start date">
     <input matEndDate formControlName="end" placeholder="End date">
   </mat-date-range-input>
@@ -8,10 +8,10 @@
     <mat-icon matDatepickerToggleIcon>calendar_month</mat-icon>
   </mat-datepicker-toggle>
   <mat-date-range-picker #picker></mat-date-range-picker>
-  @if (this.selectedRange.controls["start"].hasError('matStartDateInvalid')) {
+  @if (this.selectedDateRange.controls["start"].hasError('matStartDateInvalid')) {
     <mat-error>Invalid start date</mat-error>
   }
-  @if (this.selectedRange.controls["end"].hasError('matEndDateInvalid')) {
+  @if (this.selectedDateRange.controls["end"].hasError('matEndDateInvalid')) {
     <mat-error>Invalid end date</mat-error>
   }
 </mat-form-field>

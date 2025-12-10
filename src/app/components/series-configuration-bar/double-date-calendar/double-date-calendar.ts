@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 
 @Component({
@@ -7,10 +7,10 @@ import {FormControl, FormGroup} from '@angular/forms';
   styleUrl: './double-date-calendar.css',
   standalone: false
 })
-export class DoubleDatepickerToggleWrapperComponent {
+export class DoubleDatepickerToggleWrapperComponent implements OnInit{
 
   @Output() selectedDateRangeEmitter: EventEmitter<FormGroup> = new EventEmitter<FormGroup>();
-  selectedRange: FormGroup = new FormGroup({
+  selectedDateRange: FormGroup = new FormGroup({
     start: new FormControl<Date | null>(null),
     end: new FormControl<Date | null>(null),
   });
@@ -18,8 +18,10 @@ export class DoubleDatepickerToggleWrapperComponent {
   minDate = new Date('2025-10-17');
   maxDate = new Date();
 
-  constructor() {
-    this.selectedRange.valueChanges.subscribe(range => {
+  constructor() {}
+
+  ngOnInit(){
+    this.selectedDateRange.valueChanges.subscribe(range => {
       const { start, end } = range;
       if (start && end) {  // Only trigger if both dates are chosen
         this.onRangeSelected();
@@ -28,6 +30,6 @@ export class DoubleDatepickerToggleWrapperComponent {
   }
 
   onRangeSelected() {
-    this.selectedDateRangeEmitter.emit(this.selectedRange);
+    this.selectedDateRangeEmitter.emit(this.selectedDateRange);
   }
 }

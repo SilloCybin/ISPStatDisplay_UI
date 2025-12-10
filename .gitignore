@@ -43,6 +43,9 @@ __screenshots__/
 Thumbs.db
 
 # Personal configurations
-src/environments/environment.ts
-src/environments/environment.pi-mongodb.ts
-src/environments/environment.pi-mysql.ts
+src/environments/local/environment.ts
+src/environments/pi/environment.pi-mongodb.ts
+
+# Https
+cert.pem
+key.pem

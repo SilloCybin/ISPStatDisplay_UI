@@ -61,7 +61,6 @@
   background: url('logo.png') no-repeat center/contain;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.4;
 }
 
 .floating-text{
@@ -71,10 +70,9 @@
   transform: translateX(-50%);
   font-family: Roboto, sans-serif;
   font-size: 4rem;
-  color: #215ca4;
+  font-style: italic;
   font-weight: bold;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.6;
 }
 

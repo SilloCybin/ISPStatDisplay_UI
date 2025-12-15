@@ -129,24 +129,24 @@
     </div>
   </div>
 
-
-  <div class="time-window-parameter-section">
-    <div class="title-section-container">
-      <h1>Time window</h1>
-    </div>
-    <mat-radio-group [(ngModel)]="selectedTimeWindow" class="radio-button-container" aria-label="Select an option"
-                     (change)="onTimeWindowSelection($event)">
-      <div class="buttons-on-row">
-        <div class="button-and-input">
-          <mat-radio-button name="time-window-selection" value="fromLast">Show data from last...</mat-radio-button>
-          @if (selectedTimeWindow === 'fromLast') {
-            <span class="form">
+  @if (isOnCharts()) {
+    <div class="time-window-parameter-section">
+      <div class="title-section-container">
+        <h1>Time window</h1>
+      </div>
+      <mat-radio-group [(ngModel)]="selectedTimeWindow" class="radio-button-container" aria-label="Select an option"
+                       (change)="onTimeWindowSelection($event)">
+        <div class="buttons-on-row">
+          <div class="button-and-input">
+            <mat-radio-button name="time-window-selection" value="fromLast">Show data from last...</mat-radio-button>
+            @if (selectedTimeWindow === 'fromLast') {
+              <span class="form">
           <form class="example-form">
             <mat-form-field name="numberFormField" class="number-form-field">
               <mat-label>Number</mat-label>
               <input type="number" matInput placeholder="0-52" name="numberInput"
-                   [(ngModel)]="selectedNumberOfTimeUnits" (ngModelChange)="onNumberInputChange($event)"
-                   #numberInput="ngModel" min="1" max="52" step="1">
+                     [(ngModel)]="selectedNumberOfTimeUnits" (ngModelChange)="onNumberInputChange($event)"
+                     #numberInput="ngModel" min="1" max="52" step="1">
               @if (numberInput.hasError('min')) {
                 <mat-error>Value must be at least 1</mat-error>
               } @else if (numberInput.hasError('max')) {
@@ -156,7 +156,7 @@
               <mat-form-field name="timeUnitSelect" class="time-unit-select">
                 <mat-label>Time unit</mat-label>
                 <mat-select name="timeUnit" [(ngModel)]="selectedTimeUnit"
-                          (selectionChange)="onShowDataFromLastSelection()">
+                            (selectionChange)="onShowDataFromLastSelection()">
                 @for (timeUnit of timeUnits; track timeUnit) {
                   @if (selectedNumberOfTimeUnits === 1) {
                     <mat-option [value]="timeUnit.value">{{ timeUnit.viewValueSingular }}</mat-option>
@@ -168,37 +168,38 @@
               </mat-form-field>
             </form>
           </span>
-          }
-        </div>
-        <div>
-          <mat-radio-button name="time-window-selection" value="startDateToNow">From start date to now
-          </mat-radio-button>
-          @if (selectedTimeWindow === 'startDateToNow') {
-            <span class="form">
+            }
+          </div>
+          <div>
+            <mat-radio-button name="time-window-selection" value="startDateToNow">From start date to now
+            </mat-radio-button>
+            @if (selectedTimeWindow === 'startDateToNow') {
+              <span class="form">
           <app-datepicker-toggle-wrapper
             (selectedDateEmitter)="onStartDateToNowSelection($event)"></app-datepicker-toggle-wrapper>
         </span>
-          }
+            }
+          </div>
         </div>
-      </div>
-      <div class="buttons-on-row">
-        <div class="button-and-input">
-          <mat-radio-button name="time-window-selection" value="startDateToEndDate">From start date to end date
-          </mat-radio-button>
-          @if (selectedTimeWindow === 'startDateToEndDate') {
-            <span class="form-date-range">
+        <div class="buttons-on-row">
+          <div class="button-and-input">
+            <mat-radio-button name="time-window-selection" value="startDateToEndDate">From start date to end date
+            </mat-radio-button>
+            @if (selectedTimeWindow === 'startDateToEndDate') {
+              <span class="form-date-range">
             <app-double-datepicker-toggle-wrapper
               (selectedDateRangeEmitter)="onDateRangeSelection($event)"></app-double-datepicker-toggle-wrapper>
           </span>
-          }
+            }
+          </div>
+          <mat-radio-button name="time-window-selection" value="entireHistory">Entire history</mat-radio-button>
         </div>
-        <mat-radio-button name="time-window-selection" value="entireHistory">Entire history</mat-radio-button>
-      </div>
-    </mat-radio-group>
-  </div>
+      </mat-radio-group>
+    </div>
+  }
 
   <div class="clear-selection-section">
-    <button matButton="elevated" (click)="clearSidebarSelection()">
+    <button matButton="elevated" (click)="clearSeriesConfigurationSelection()">
       <mat-icon>clear</mat-icon>
       Clear selection
     </button>

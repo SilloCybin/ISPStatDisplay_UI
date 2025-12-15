@@ -3,8 +3,10 @@
     @if (!disableAccountButton) {
       <a mat-tab-link [routerLink]="'/homepage'" routerLinkActive #HomePage="routerLinkActive"
          [active]="HomePage.isActive">Homepage</a>
-      <a mat-tab-link [routerLink]="'/dataExplorer'" routerLinkActive #DataExplorer="routerLinkActive"
-         [active]="DataExplorer.isActive">Data Explorer</a>
+      <a mat-tab-link [routerLink]="'/dataExplorer/charts'" routerLinkActive #Charts="routerLinkActive"
+         [active]="Charts.isActive">Charts</a>
+      <a mat-tab-link [routerLink]="'/dataExplorer/heatmap'" routerLinkActive #Heatmap="routerLinkActive"
+         [active]="Heatmap.isActive">Heatmap</a>
       <span class="spacer"></span>
       <button class="account-button" matIconButton [matMenuTriggerFor]="menu">
         <mat-icon>person</mat-icon>

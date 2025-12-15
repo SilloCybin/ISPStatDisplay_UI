@@ -19,7 +19,7 @@ import {colors} from '../../constants/colors'
 import {timeOpsWrapper} from '../../utils/time-ops-wrapper';
 
 @Component({
-  selector: 'app-chart-container',
+  selector: 'app-charts',
   imports: [
     ChartComponent,
     MatIcon,
@@ -32,10 +32,10 @@ import {timeOpsWrapper} from '../../utils/time-ops-wrapper';
     MatOption,
     MatSelect
   ],
-  templateUrl: './chart-container.component.html',
-  styleUrl: './chart-container.component.css'
+  templateUrl: './charts.component.html',
+  styleUrl: './charts.component.css'
 })
-export class ChartContainerComponent implements OnInit, OnDestroy {
+export class ChartsComponent implements OnInit, OnDestroy {
 
   selectedMetrics: string[] = [];
   displayOnTwoYAxesOption: boolean = false;
@@ -63,7 +63,7 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.metricChartService.selectedMetric$.pipe(takeUntil(this.destroySubject)).subscribe((metrics) => {
+    this.metricChartService.selectedMetrics$.pipe(takeUntil(this.destroySubject)).subscribe((metrics) => {
       this.selectedMetrics = metrics;
       this.setDisplayOnTwoYAxesOption();
       this.updateChart();
@@ -133,7 +133,7 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
           {
             name: formatMetricName(this.selectedMetrics[i]),
             type: 'line',
-            data: data.map(p => [new Date(p.timestamp).getTime(), p.value]),
+            data: data.map(coordinate => [new Date(coordinate.timestamp).getTime(), coordinate.value]),
             yaxis: i,
             color: this.colors[i]
           }));
@@ -142,7 +142,7 @@ export class ChartContainerComponent implements OnInit, OnDestroy {
           {
             name: formatMetricName(this.selectedMetrics[i]),
             type: 'line',
-            data: data.map(p => [new Date(p.timestamp).getTime(), p.value]),
+            data: data.map(coordinate => [new Date(coordinate.timestamp).getTime(), coordinate.value]),
           }));
       }
 

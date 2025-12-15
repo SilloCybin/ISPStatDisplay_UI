@@ -1,10 +1,11 @@
 import {Routes} from '@angular/router';
 import {HomepageComponent} from './components/home-page/homepage.component';
 import {DataExplorer} from './components/data-explorer/data-explorer.component';
-import {ChartContainerComponent} from './components/chart-container/chart-container.component';
+import {ChartsComponent} from './components/charts/charts.component';
 import {AuthGuard} from './guards/auth.guard';
 import {LoginComponent} from './components/login/login.component';
 import {SignupComponent} from './components/signup/signup.component';
+import {HeatmapComponent} from './components/heatmap/heatmap.component';
 
 export const routes: Routes = [
   {
@@ -32,8 +33,13 @@ export const routes: Routes = [
     canActivateChild: [AuthGuard],
     children: [
       {
-        path: 'chart',
-        component: ChartContainerComponent
+        path: 'charts',
+        component: ChartsComponent
+      },
+      {
+        path: 'heatmap',
+        component: HeatmapComponent,
+        canActivate: [AuthGuard]
       },
       {
         path: '',

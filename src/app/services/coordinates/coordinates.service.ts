@@ -14,7 +14,7 @@ export class CoordinatesService {
   private apiBaseUrl: string = environment.apiBaseUrl;
 
   private selectedMetricsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  selectedMetric$: Observable<string[]> = this.selectedMetricsSubject.asObservable();
+  selectedMetrics$: Observable<string[]> = this.selectedMetricsSubject.asObservable();
 
   private timeWindowSettingsSubject: BehaviorSubject<TimeWindowSettings> = new BehaviorSubject<TimeWindowSettings>(new TimeWindowSettings());
   timeWindowSettings$: Observable<TimeWindowSettings> = this.timeWindowSettingsSubject.asObservable();

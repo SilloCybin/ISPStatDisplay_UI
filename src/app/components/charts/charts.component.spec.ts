@@ -1,6 +1,6 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
-import {ChartContainerComponent} from './chart-container.component';
+import {ChartsComponent} from './charts.component';
 import {CoordinatesService} from '../../services/coordinates/coordinates.service';
 import {provideHttpClient} from '@angular/common/http';
 import {provideHttpClientTesting} from '@angular/common/http/testing';
@@ -10,8 +10,8 @@ import {of} from 'rxjs';
 import {timeOpsWrapper} from '../../utils/time-ops-wrapper';
 
 describe('ChartContainerComponent', () => {
-  let component: ChartContainerComponent;
-  let fixture: ComponentFixture<ChartContainerComponent>;
+  let component: ChartsComponent;
+  let fixture: ComponentFixture<ChartsComponent>;
   let service: CoordinatesService;
 
   const selectedMetricsMock1 = ['downloadBandwidth', 'polynomialRegression'];
@@ -32,7 +32,7 @@ describe('ChartContainerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChartContainerComponent],
+      imports: [ChartsComponent],
       providers: [
         CoordinatesService,
         provideHttpClient(),
@@ -40,7 +40,7 @@ describe('ChartContainerComponent', () => {
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ChartContainerComponent) as any;
+    fixture = TestBed.createComponent(ChartsComponent) as any;
     component = fixture.componentInstance;
 
     service = TestBed.inject(CoordinatesService);

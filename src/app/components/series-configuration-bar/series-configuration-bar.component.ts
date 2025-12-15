@@ -12,9 +12,11 @@ import {MatNativeDateModule, provideNativeDateAdapter} from '@angular/material/c
 import {DatepickerToggleWrapperModule} from './single-date-calendar/single-date-calendar-wrapper';
 import {DoubleDatepickerToggleWrapperModule} from './double-date-calendar/double-date-calendar-wrapper';
 import {TimeWindowSettings} from '../../models/classes/time-window';
-import {debounceTime, Subject, takeUntil} from 'rxjs';
+import {debounceTime, filter, Subject, takeUntil} from 'rxjs';
 import {TimeUnit} from '../../models/interfaces/time-unit.interface';
 import {timeUnits} from '../../constants/timeUnits';
+import {NavigationEnd, Router} from '@angular/router';
+import {HeatmapService} from '../../services/heatmap/heatmap.service';
 
 @Component({
   selector: 'app-series-configuration-bar',
@@ -53,13 +55,27 @@ export class SeriesConfigurationBarComponent implements OnInit, OnDestroy{
   selectedStartDateToNowStartDate: Date | null = null;
   selectedDateRange: FormGroup | null = null;
 
-  private destroySubject: Subject<void> = new Subject<void>();
+  currentUrl: string = '';
 
-  constructor(private metricChartService: CoordinatesService){}
+  private destroyComponentSubject: Subject<void> = new Subject<void>();
+
+
+  constructor(private coordinatesService: CoordinatesService, private heatmapService: HeatmapService, private router: Router){}
+
 
   ngOnInit() {
 
-    this.metricChartService.selectedMetric$.pipe(takeUntil(this.destroySubject)).subscribe(metrics => {
+    this.currentUrl = this.router.url;
+
+    this.router.events.pipe(
+      takeUntil(this.destroyComponentSubject),
+      filter(event => event instanceof NavigationEnd)).subscribe((event) => {
+        this.currentUrl = event.urlAfterRedirects;
+        this.clearSeriesConfigurationSelection();
+      }
+    )
+
+    this.coordinatesService.selectedMetrics$.pipe(takeUntil(this.destroyComponentSubject)).subscribe(metrics => {
       this.selectedMetrics = metrics;
     });
 
@@ -75,9 +91,13 @@ export class SeriesConfigurationBarComponent implements OnInit, OnDestroy{
     } else {
       this.selectedMetrics.push(selectedMetric);
     }
-    this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'polynomialRegression').filter(item => item !== 'exponentialMovingAverage');
-    this.metricChartService.resetTrendlinesSelections();
-    this.metricChartService.setSelectedMetrics(this.selectedMetrics);
+    if (this.isOnCharts()){
+      this.selectedMetrics = this.selectedMetrics.filter(item => item !== 'polynomialRegression').filter(item => item !== 'exponentialMovingAverage');
+      this.coordinatesService.resetTrendlinesSelections();
+      this.coordinatesService.setSelectedMetrics(this.selectedMetrics);
+    } else {
+      this.heatmapService.setSelectedMetric(this.selectedMetrics);
+    }
   }
 
   isMetricSelected(metric: string): boolean {
@@ -85,18 +105,19 @@ export class SeriesConfigurationBarComponent implements OnInit, OnDestroy{
   }
 
   isMetricDisabled(metric: string): boolean | undefined {
-    return isMetricDisabled(metric, this.selectedMetrics, this.isMetricSelected(metric));
+    return isMetricDisabled(metric, this.selectedMetrics, this.isMetricSelected(metric), this.isOnCharts());
   }
 
-  clearSidebarSelection() {
+  clearSeriesConfigurationSelection() {
     this.selectedMetrics = [];
-    this.metricChartService.setSelectedMetrics(this.selectedMetrics);
+    this.coordinatesService.setSelectedMetrics(this.selectedMetrics);
+    this.heatmapService.setSelectedMetric(this.selectedMetrics);
     this.selectedTimeWindow = null;
     this.selectedNumberOfTimeUnits = null;
     this.selectedTimeUnit = null;
     this.selectedStartDateToNowStartDate = null;
     this.selectedDateRange = null;
-    this.metricChartService.setSelectedTimeWindow(new TimeWindowSettings());
+    this.coordinatesService.setSelectedTimeWindow(new TimeWindowSettings());
   }
 
   onTimeWindowSelection(event: MatRadioChange) {
@@ -145,7 +166,7 @@ export class SeriesConfigurationBarComponent implements OnInit, OnDestroy{
       fromLastWindowSetting.isEntireHistory = false;
       fromLastWindowSetting.timeUnitNumber = this.selectedNumberOfTimeUnits;
       fromLastWindowSetting.timeUnit = this.selectedTimeUnit;
-      this.metricChartService.setSelectedTimeWindow(fromLastWindowSetting);
+      this.coordinatesService.setSelectedTimeWindow(fromLastWindowSetting);
     }
   }
 
@@ -154,7 +175,7 @@ export class SeriesConfigurationBarComponent implements OnInit, OnDestroy{
     const startDateToNowWindowSetting = new TimeWindowSettings();
     startDateToNowWindowSetting.isEntireHistory = false;
     startDateToNowWindowSetting.startDate = date;
-    this.metricChartService.setSelectedTimeWindow(startDateToNowWindowSetting);
+    this.coordinatesService.setSelectedTimeWindow(startDateToNowWindowSetting);
   }
 
   onDateRangeSelection(range: FormGroup) {
@@ -162,16 +183,21 @@ export class SeriesConfigurationBarComponent implements OnInit, OnDestroy{
     const startDateToEndDateWindowSetting = new TimeWindowSettings();
     startDateToEndDateWindowSetting.isEntireHistory = false;
     startDateToEndDateWindowSetting.dateRange = range;
-    this.metricChartService.setSelectedTimeWindow(startDateToEndDateWindowSetting);
+    this.coordinatesService.setSelectedTimeWindow(startDateToEndDateWindowSetting);
   }
 
   setTimeWindowSelection(timeWindowSettings?: TimeWindowSettings) {
-    this.metricChartService.setSelectedTimeWindow(timeWindowSettings);
+    this.coordinatesService.setSelectedTimeWindow(timeWindowSettings);
+  }
+
+  isOnCharts(){
+    return (this.currentUrl === '/dataExplorer/charts');
   }
 
   ngOnDestroy(): void {
-    this.destroySubject.next();
-    this.destroySubject.complete()
+    this.destroyComponentSubject.next();
+    this.destroyComponentSubject.complete();
+    this.clearSeriesConfigurationSelection();
   }
 
 }

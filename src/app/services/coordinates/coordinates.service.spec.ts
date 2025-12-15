@@ -89,7 +89,7 @@ describe('CoordinatesService', () => {
   it('should update metricsSelectionSubject when setSelectedMetrics() is called', () => {
     let result: string[] | undefined;
 
-    service.selectedMetric$.subscribe(metrics => result = metrics);
+    service.selectedMetrics$.subscribe(metrics => result = metrics);
     service.setSelectedMetrics(selectedMetricsMock);
 
     expect(result).toEqual(selectedMetricsMock);
@@ -114,7 +114,7 @@ describe('CoordinatesService', () => {
     service.setSelectedTimeWindow(entireHistoryWindowSettingsMock);
     service.clearSelection();
 
-    service.selectedMetric$.subscribe(metrics => {
+    service.selectedMetrics$.subscribe(metrics => {
       metricsResult = metrics;
     });
     service.timeWindowSettings$.subscribe(timeWindowSettings => {

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {SeriesConfigurationBarComponent} from '../series-configuration-bar/series-configuration-bar.component';
-import {RouterOutlet} from '@angular/router';
+import {Router, RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-data-explorer',
@@ -13,6 +13,10 @@ import {RouterOutlet} from '@angular/router';
 })
 export class DataExplorer {
 
-  constructor() {}
+  constructor(private router: Router) {}
+
+  getCurrentURL(){
+    return this.router.url;
+  }
 
 }

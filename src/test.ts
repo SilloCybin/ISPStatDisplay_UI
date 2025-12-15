@@ -15,4 +15,4 @@ import './app/services/coordinates/coordinates.service.spec';
 import './app/components/home-page/homepage.component.spec';
 import './app/components/data-explorer/data-explorer.component.spec';
 import './app/components/series-configuration-bar/series-configuration-bar.component.spec';
-import './app/components/chart-container/chart-container.component.spec';
+import './app/components/charts/charts.component.spec';

@@ -1,12 +1,15 @@
 .data-explorer-layout {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: calc(100% - 49px);
 }
 
 .chart-parameter-selector {
   background-color: #eee;
+  position: sticky;
+  top: 49px;
 }
 
 .chart-container {

@@ -117,7 +117,7 @@ describe('SeriesConfigurationBarComponent', () => {
     component.selectedStartDateToNowStartDate = null;
     component.selectedDateRange = null;
 
-    component.clearSidebarSelection();
+    component.clearSeriesConfigurationSelection();
 
     expect(component.selectedTimeWindow).toBeNull();
     expect(component.selectedTimeUnit).toBeNull();
